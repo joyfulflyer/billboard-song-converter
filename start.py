@@ -38,21 +38,22 @@ if __name__ == "__main__":
     action = args.action
     # args.merge = True
     # args.number = 500
-    with get_session()() as session:
-        if args.seed:
-            asyncio.run(
-                elasticsearch_functions.add_existing_songs_async(session))
-        if args.continue_songs:
-            if args.number < 0:  # -1 and -2 are create all here
-                create_songs(session)
-            else:
-                song_creator.create_in_batch(session, args.number)
-        if args.merge:
-            limit = float('inf')
-            if args.number >= 0:
-                limit = args.number
-            asyncio.run(
-                similar_songs.handle_close_songs_async(
-                    session,
-                    skip_user_input=args.user_input_disabled,
-                    limit=limit))
+    # Mutithreading/async may be badly broken.
+    # The suggestion is to use a thread local session maker and pass that down
+    # Then we creation the session on the same thead we will commit on.
+    Session = get_session()
+    if args.seed:
+        asyncio.run(elasticsearch_functions.add_existing_songs_async(Session))
+    if args.continue_songs:
+        if args.number < 0:  # -1 and -2 are create all here
+            create_songs(session)
+        else:
+            song_creator.create_in_batch(session, args.number)
+    if args.merge:
+        limit = float('inf')
+        if args.number >= 0:
+            limit = args.number
+        asyncio.run(
+            similar_songs.handle_close_songs_async(
+                session, skip_user_input=args.user_input_disabled,
+                limit=limit))

@@ -14,13 +14,13 @@ STEP = 2000
 logger = logging.getLogger(__name__)
 
 
-async def add_existing_songs_async(session):
+async def add_existing_songs_async(Session):
     loop = asyncio.get_running_loop()
     loop.set_default_executor(concurrent.futures.ThreadPoolExecutor())
     elastic.init_searchable_song()
     startTime = time.time()
 
-    for db_songs in _gen(session):
+    for db_songs in _gen(Session):
         afterDbTime = time.time()
         diff = afterDbTime - startTime
         futures = [
@@ -41,10 +41,10 @@ async def add_existing_songs_async(session):
         f'Took {time.strftime("%H:%M:%S", time.gmtime(diff))} to save songs')
 
 
-def _gen(session):
+def _gen(Session):
     offset = 0
     while True:
-        db_songs = db_retriever.get_songs_except_id_pagination(session,
+        db_songs = db_retriever.get_songs_except_id_pagination(Session,
                                                                -1,
                                                                limit=STEP,
                                                                offset=offset)
@@ -64,6 +64,7 @@ if __name__ == '__main__':
             logging.StreamHandler()
         ])
     global_connect()
-    with Session.get_session()() as session:
-        elastic.init_searchable_song()
-        asyncio.run(add_existing_songs_async(session))
+    # will need to be made in to a thead local session
+    Session = Session.get_session()
+    elastic.init_searchable_song()
+    asyncio.run(add_existing_songs_async(Session))

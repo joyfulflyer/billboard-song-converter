@@ -55,9 +55,10 @@ def get_songs_except_id(Session, id, limit=2000000):
     return session.query(Song).filter(Song.id != id).limit(limit).all()
 
 
-def get_songs_except_id_pagination(session, id, limit=200000, offset=0):
-    return session.query(Song).filter(
-        Song.id != id).limit(limit).offset(offset).all()
+def get_songs_except_id_pagination(Session, id, limit=200000, offset=0):
+    with Session() as session:
+        return session.query(Song).filter(
+            Song.id != id).limit(limit).offset(offset).all()
 
 
 def get_entries_with_song_id_pagination(session, id, limit=200000, offset=0):
@@ -90,3 +91,8 @@ def get_song_id_query_for(name, artist, session):
     return session.query(Song.id).join(Entry).filter(
         Entry.name == name,
         Entry.artist == artist).filter(Entry.song_id != -1).group_by(Song.id)
+
+
+def get_song_id_for_name_artist(name, artist, Session):
+    with Session() as session:
+        return get_song_id_for_name_artist(name, artist, session).all()

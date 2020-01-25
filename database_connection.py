@@ -3,7 +3,7 @@ import sys
 import urllib.parse
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 import traceback
 
 from models.base import Base
@@ -13,12 +13,13 @@ sys.path.append("/opt/")
 logger = logging.getLogger(__name__)
 
 
-# Returns what I understand to be a session maker object
+# Returns a scoped session maker object
 def connect(url):
     logger.error("Creating engine with url <%r>" % (url, ))
     traceback.print_stack()
     engine = create_engine(url)
-    Session = sessionmaker(bind=engine)
+    session_maker = sessionmaker(bind=engine)
+    Session = scoped_session(session_maker)
     return Session
 
 

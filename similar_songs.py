@@ -16,8 +16,6 @@ STEP = 5000
 logger = logging.getLogger(__name__)
 
 
-
-
 async def handle_close_songs_async(session, skip_user_input=False, limit=5000):
     startTime = time.time()
     for entries in _gen(session, limit):
@@ -70,15 +68,15 @@ async def _handle_group(group, session, skip_user_input=False):
     await db_saver.commit(session)
 
 
-async def _handle_potential_same_song(entry, session, bypass=False):
+async def _handle_potential_same_song(entry, Session, bypass=False):
     # Check to see if we have an exact match
     # If we don't, check search and ask
-    song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
-                                                    session)
-    song_count = song_query.count()
+    db_songs = db_retriever.get_song_id_for_name_artist(entry.name, entry.artist,
+                                                    Session)
+    song_count = len(db_songs)
     db_song = None
     if song_count == 1:
-        db_song = song_query.first()
+        db_song = db_songs[0]
     else:
         results = await elastic.search_name_artist_async(name=entry.name,
                                                          artist=entry.artist)
@@ -99,13 +97,13 @@ async def _handle_potential_same_song(entry, session, bypass=False):
                     db_song.id = int(songId)
                 else:
                     db_song = await _create_db_async(entry.name, entry.artist,
-                                                     session)
+                                                     Session)
         else:
-            db_song = await _create_db_async(entry.name, entry.artist, session)
+            db_song = await _create_db_async(entry.name, entry.artist, Session)
 
     entry.song_id = db_song.id
     # Not sure if needed
-    await db_saver.commit(session)
+    # await db_saver.commit(session)
 
 
 def further_comparison_checks(entry, search_result):
@@ -138,14 +136,14 @@ def further_comparison_checks(entry, search_result):
     return False
 
 
-def _create_db(name, artist, session):
-    db_song = db_saver.create_song(name, artist, session)
+async def _create_db(name, artist, session):
+    db_song = await db_saver.create_song_async(name, artist, session)
     elastic.create_searchable_from_song(db_song)
     return db_song
 
 
-async def _create_db_async(name, artist, session):
-    db_song = await db_saver.create_song_async(name, artist, session)
+async def _create_db_async(name, artist, Session):
+    db_song = await db_saver.create_song_async(name, artist, Session)
     await elastic.create_searchable_from_song_async(db_song)
     return db_song
 
@@ -215,5 +213,5 @@ if __name__ == '__main__':
             logging.StreamHandler()
         ])
 
-    Session = Session.get_session()
-    asyncio.run(handle_close_songs(Session))
+    with Session.get_session()() as session:
+        asyncio.run(handle_close_songs_async(session))
