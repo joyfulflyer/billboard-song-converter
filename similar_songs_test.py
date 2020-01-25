@@ -1,14 +1,6 @@
-import time
 import unittest
 from collections import namedtuple
-from unittest.mock import MagicMock, patch
 
-import billboard
-import requests
-
-import load_songs
-import similar_songs
-from models.chart import Chart
 from similar_songs import further_comparison_checks
 
 
