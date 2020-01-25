@@ -12,7 +12,6 @@ import elastic
 logger = logging.getLogger(__name__)
 
 
-#Will need to deal with different casing
 def process_songs(session, limit):
     entry_query = db_retriever.get_entries_with_no_song_id_with_session(
         session).limit(limit)
@@ -54,18 +53,17 @@ def entry_to_song(entry, session):
         session.commit()
 
 
-def genny(total, batch_size):
+def _genny(total, batch_size):
     num_left = total
     while num_left > 0:
         yield batch_size
         num_left = num_left - batch_size
 
 
-def create_in_batch(Session, total, batch_size=100):
+def create_in_batch(session, total, batch_size=100):
     start_time = time.time()
     logger.error("Start time: %r" % (start_time, ))
-    session = Session()
-    for size in genny(total, batch_size):
+    for size in _genny(total, batch_size):
         process_songs(session, size)
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -73,29 +71,8 @@ def create_in_batch(Session, total, batch_size=100):
                  (time.strftime("%H:%M:%S", time.gmtime(elapsed_time)), ))
 
 
-def batch_all(Session, batch_size=1000):
-    session = Session()
+def batch_all(session, batch_size=1000):
     num_unprocessed = db_retriever.get_entries_with_no_song_id_with_session(
         session).count()
-    create_in_batch(Session, num_unprocessed, batch_size)
+    create_in_batch(session, num_unprocessed, batch_size)
     logger.info("Completed processing songs")
-
-
-def create_in_loop(Session, total=10000, loops=10):
-    start_time = time.time()
-    logger.error("Start time: %r" % (start_time, ))
-    session = Session()
-    while range(loops):
-        process_songs(session, total / loops)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    logger.error("Elapsed time: %s" % (elapsed_time, ))
-
-
-def create_songs(Session, count=100):
-    start_time = time.time()
-    session = Session()
-    process_songs(session, count)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    logger.error("Elapsed time: %s" % (elapsed_time, ))

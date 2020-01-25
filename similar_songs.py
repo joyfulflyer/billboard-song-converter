@@ -16,16 +16,10 @@ STEP = 5000
 logger = logging.getLogger(__name__)
 
 
-def handle_close_songs(Session, skip_user_input=False, limit=5000):
-    asyncio.run(
-        handle_close_songs_async(Session,
-                                 skip_user_input=skip_user_input,
-                                 limit=limit))
 
 
-async def handle_close_songs_async(Session, skip_user_input=False, limit=5000):
+async def handle_close_songs_async(session, skip_user_input=False, limit=5000):
     startTime = time.time()
-    session = Session()
     for entries in _gen(session, limit):
         groupStartTime = time.time()
         sorted_entries = sorted(entries,
@@ -198,17 +192,6 @@ class SongComparison():
     search_name = ""
     search_artist = ""
 
-    # def __init__(self, initial_entry, initial_search_result):
-    #     # # Originals just in case
-    #     # self.initial_entry_name = initial_entry.name
-    #     # self.initial_entry_artist = initial_entry.artist
-    #     # self.initial_search_name = initial_search_result.name
-    #     # self.initial_search_artist = initial_search_result.artist
-
-    #     self.entry_name = initial_entry.name
-    #     self.entry_artist = initial_entry.artist
-    #     self.search_name = initial_search_result.name
-    #     self.search_artist = initial_search_result.artist
     def compare(self):
         return self.entry_name == self.search_name and self.entry_artist == self.search_artist
 
