@@ -9,12 +9,10 @@ yapf = "*"
 rope = "*"
 
 [packages]
-billboard-py = "*"
 flask-sqlalchemy = "*"
 flask = "*"
 PyMySQL = "*"
 sqlalchemy = "*"
-beautifulsoup4 = "*"
 requests = "*"
 cryptography = "*"
 elasticsearch = "*"

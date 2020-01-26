@@ -60,9 +60,9 @@ def _gen(session, limit=float('inf')):
         offset = offset + step
 
 
-async def _handle_group(group, session, skip_user_input=False):
+async def _handle_group(group, Session, skip_user_input=False):
     entry = group[0]
-    await _handle_potential_same_song(entry, session, bypass=skip_user_input)
+    await _handle_potential_same_song(entry, Session, bypass=skip_user_input)
     for e in group:
         e.song_id = entry.song_id
     await db_saver.commit(session)
