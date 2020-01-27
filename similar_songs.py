@@ -65,7 +65,7 @@ async def _handle_group(group, session, skip_user_input=False):
     await _handle_potential_same_song(entry, session, bypass=skip_user_input)
     for e in group:
         e.song_id = entry.song_id
-    await db_saver.commit(session)
+    session.commit()
 
 
 async def _handle_potential_same_song(entry, session, bypass=False):
@@ -102,8 +102,6 @@ async def _handle_potential_same_song(entry, session, bypass=False):
             db_song = await _create_db_async(entry.name, entry.artist, session)
 
     entry.song_id = db_song.id
-    # Not sure if needed
-    await db_saver.commit(session)
 
 
 def further_comparison_checks(entry, search_result):
@@ -143,14 +141,9 @@ def _create_db(name, artist, session):
 
 
 async def _create_db_async(name, artist, session):
-    db_song = await db_saver.create_song_async(name, artist, session)
+    db_song = db_saver.create_song(name, artist, session)
     await elastic.create_searchable_from_song_async(db_song)
     return db_song
-
-
-def _compare_fields_with(entry, search_result, func):
-    return func(entry.name) == func(search_result.name) and func(
-        entry.artist) == func(search_result.artist)
 
 
 def _strip_and_lower(song_comparison):
