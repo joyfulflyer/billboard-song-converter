@@ -16,8 +16,6 @@ STEP = 5000
 logger = logging.getLogger(__name__)
 
 
-
-
 async def handle_close_songs_async(session, skip_user_input=False, limit=5000):
     startTime = time.time()
     for entries in _gen(session, limit):
@@ -215,5 +213,5 @@ if __name__ == '__main__':
             logging.StreamHandler()
         ])
 
-    Session = Session.get_session()
-    asyncio.run(handle_close_songs(Session))
+    session = Session.get_session()()
+    asyncio.run(handle_close_songs_async(session))

@@ -1,6 +1,8 @@
 import database_connection
 from config import Config as config
 
+_session_makers = {}
+
 
 def get_session(url=None):
     if url is None:
@@ -9,5 +11,7 @@ def get_session(url=None):
             password=config.password,
             host=config.host,
             dbname=config.db_name)
-    Session = database_connection.connect(url)
-    return Session
+    if url not in _session_makers:
+        Session = database_connection.connect(url)
+        _session_makers[url] = Session
+    return _session_makers[url]
