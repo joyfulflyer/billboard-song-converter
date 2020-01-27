@@ -1,15 +1,13 @@
+import asyncio
 import logging
 import sys
 
 from sqlalchemy.exc import ProgrammingError
 
-import db_retriever as retriever
 import elasticsearch_functions
+import similar_songs
 import song_creator
 from Session import get_session
-import similar_songs
-import elasticsearch_functions
-import asyncio
 
 sys.path.append("/opt/")
 
