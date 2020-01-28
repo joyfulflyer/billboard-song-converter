@@ -1,12 +1,10 @@
 from setuptools import setup, find_packages
 from os import path
 
-setup(name="billboard-grabber",
-      version="0.2.2",
-      description="Get the billboard data and put it in the database",
+setup(name="billboard-song-converter",
+      version="0.0.1",
+      description="Convert entries to songs",
       author="Joyfulflyer",
       packages=find_packages(),
       python_requires='<=3.6, <4',
-      install_requires=[
-          'billboard.py', 'Flask', 'Flask-SQLAlchemy', 'PyMySQL', 'SQLAlchemy'
-      ])
+      install_requires=['Flask', 'Flask-SQLAlchemy', 'PyMySQL', 'SQLAlchemy'])
