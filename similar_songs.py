@@ -95,6 +95,9 @@ async def _handle_potential_same_song(entry, session, bypass=False):
                     songId = first_result.meta.id
                     db_song = namedtuple('Song', field_names=['id'])
                     db_song.id = int(songId)
+                elif should_create_new.isnumeric():
+                    db_song = namedtuple('Song', field_names=['id'])
+                    db_song.id = int(should_create_new)
                 else:
                     db_song = await _create_db_async(entry.name, entry.artist,
                                                      session)
@@ -173,10 +176,11 @@ def _get_input_for_song(entry, results):
             entry.name, entry.artist)
     ]
     for result in results:
-        lines.append("Result: name= {:<55s} artist= {:<50s}\n".format(
-            result.name, result.artist))
+        lines.append(
+            "Result: name= {:<55s} artist= {:<50s} id= {:<10s}\n".format(
+                result.name, result.artist, result.meta.id))
     lines.append(
-        f"score:{result.meta.score}. Create new song? (y/n) no entry creates a song: "
+        f"Create new song? (y/n) no entry creates a song or a number uses that as an id: "
     )
     return input(''.join(lines))
 
