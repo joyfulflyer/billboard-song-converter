@@ -64,6 +64,6 @@ if __name__ == '__main__':
             logging.StreamHandler()
         ])
     global_connect()
-    with Session.get_session()() as session:
-        elastic.init_searchable_song()
-        asyncio.run(add_existing_songs_async(session))
+    session = Session.get_session()()
+    elastic.init_searchable_song()
+    asyncio.run(add_existing_songs_async(session))
