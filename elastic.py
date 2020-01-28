@@ -12,7 +12,7 @@ from elasticsearch_client.client import global_connect
 from elasticsearch_client.song import SearchableSong
 
 MIN_SAFE_SCORE = 25
-MIN_SCORE_FOR_INQUERY = 20
+MIN_SCORE_FOR_INQUERY = 18
 
 logger = logging.getLogger(__name__)
 

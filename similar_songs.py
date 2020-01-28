@@ -78,8 +78,8 @@ async def _handle_potential_same_song(entry, session, bypass=False):
     if song_count == 1:
         db_song = song_query.first()
     else:
-        results = await elastic.search_name_artist_async(name=entry.name,
-                                                         artist=entry.artist)
+        results = elastic.search_name_artist(name=entry.name,
+                                             artist=entry.artist)
         if results.count > 0:
             first_result = results.result[0]
             same = further_comparison_checks(entry, first_result)
@@ -90,7 +90,7 @@ async def _handle_potential_same_song(entry, session, bypass=False):
             else:
                 if bypass:
                     return
-                should_create_new = _get_input_for_song(entry, first_result)
+                should_create_new = _get_input_for_song(entry, results.result)
                 if should_create_new.lower().strip() == 'n':
                     songId = first_result.meta.id
                     db_song = namedtuple('Song', field_names=['id'])
@@ -167,14 +167,18 @@ def _log_entry_result(entry, first_result):
     pass
 
 
-def _get_input_for_song(entry, result):
-    return input(
+def _get_input_for_song(entry, results):
+    lines = [
         "Entry:  name= {:<55s} artist= {:<50s}\n".format(
-            entry.name, entry.artist) +
-        "Result: name= {:<55s} artist= {:<50s}\n".format(
-            result.name, result.artist) +
+            entry.name, entry.artist)
+    ]
+    for result in results:
+        lines.append("Result: name= {:<55s} artist= {:<50s}\n".format(
+            result.name, result.artist))
+    lines.append(
         f"score:{result.meta.score}. Create new song? (y/n) no entry creates a song: "
     )
+    return input(''.join(lines))
 
 
 class SongComparison():
