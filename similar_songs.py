@@ -12,6 +12,7 @@ import elastic
 
 ARTIST_WORDS_TO_IGNORE = ['feat', 'featuring', 'vs', 'ft']
 STEP = 5000
+TRANSFORMS = {'and': '&'}
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +24,13 @@ async def handle_close_songs_async(session, skip_user_input=False, limit=5000):
         sorted_entries = sorted(entries,
                                 key=lambda entry: (entry.name, entry.artist))
         # Assume sorted
-        futures = [
+        for _, group in itertools.groupby(sorted_entries,
+                                          key=lambda entry:
+                                          (entry.name, entry.artist)):
             _handle_group(list(group),
                           session,
                           skip_user_input=skip_user_input)
-            for _, group in itertools.groupby(
-                sorted_entries, key=lambda entry: (entry.name, entry.artist))
-        ]
-        await asyncio.gather(*futures)
+
         groupFinishTime = time.time()
         diff = groupFinishTime - groupStartTime
         logger.error(
@@ -60,15 +60,15 @@ def _gen(session, limit=float('inf')):
         offset = offset + step
 
 
-async def _handle_group(group, session, skip_user_input=False):
+def _handle_group(group, session, skip_user_input=False):
     entry = group[0]
-    await _handle_potential_same_song(entry, session, bypass=skip_user_input)
+    _handle_potential_same_song(entry, session, bypass=skip_user_input)
     for e in group:
         e.song_id = entry.song_id
     session.commit()
 
 
-async def _handle_potential_same_song(entry, session, bypass=False):
+def _handle_potential_same_song(entry, session, bypass=False):
     # Check to see if we have an exact match
     # If we don't, check search and ask
     song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
@@ -99,10 +99,9 @@ async def _handle_potential_same_song(entry, session, bypass=False):
                     db_song = namedtuple('Song', field_names=['id'])
                     db_song.id = int(should_create_new)
                 else:
-                    db_song = await _create_db_async(entry.name, entry.artist,
-                                                     session)
+                    db_song = _create_db(entry.name, entry.artist, session)
         else:
-            db_song = await _create_db_async(entry.name, entry.artist, session)
+            db_song = _create_db(entry.name, entry.artist, session)
 
     entry.song_id = db_song.id
 
