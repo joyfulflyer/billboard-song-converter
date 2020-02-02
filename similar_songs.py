@@ -10,9 +10,9 @@ import db_retriever
 import db_saver
 import elastic
 
-ARTIST_WORDS_TO_IGNORE = ['feat', 'featuring', 'vs', 'ft']
+ARTIST_WORDS_TO_IGNORE = ['feat', 'featuring', 'vs', 'ft', 'the']
 STEP = 5000
-TRANSFORMS = {'and': '&'}
+TRANSFORMS = {re.compile(r' and '): '&', re.compile(r' with '): '&'}
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ def further_comparison_checks(entry, search_result):
     if lower_cased.compare():
         return True
     no_curly_brackets = lower_cased.transform_with(
-        lambda piece: re.sub(r'\{[^}]+\}', '', piece).strip())
+        lambda piece: _remove_curly_brackets(piece))
     if no_curly_brackets.compare():
         return True
     no_punctuation = lower_cased.transform_with(
@@ -132,6 +132,12 @@ def further_comparison_checks(entry, search_result):
         lambda f: _strip_punctuation(f)).transform_with(
             lambda piece: _remove_key_words_remove_spaces(piece))
     if reduced.compare():
+        return True
+    transformed = no_curly_brackets \
+            .transform_with(_transform_name_artist) \
+            .transform_with(_strip_punctuation) \
+            .transform_with(_remove_key_words_remove_spaces)
+    if transformed.compare():
         return True
     return False
 
@@ -162,11 +168,27 @@ def _remove_key_words_remove_spaces(s):
                s.split(' ')))
 
 
+def _remove_curly_brackets(s):
+    return re.sub(r'\{[^}]+\}', '', s).strip()
+
+
 def _log_entry_result(entry, first_result):
     logger.error(
         f"((\"{entry.name}\", \"{entry.artist}\"), (\"{first_result.name}\", \"{first_result.artist}\"), {first_result.meta.score}),"
     )
     pass
+
+
+# This is probably not the most efficient way to do this
+def _transform_name_artist(entry):
+    transformer = entry
+    # for each key, transform it in to value
+    for key, value in TRANSFORMS.items():
+        if re.match(key, transformer):
+            logger.error(f"Found match {key} for '{transformer}'")
+        transformer = re.sub(key, value, transformer)
+
+    return transformer
 
 
 def _get_input_for_song(entry, results):
@@ -214,4 +236,4 @@ if __name__ == '__main__':
         ])
 
     session = Session.get_session()()
-    asyncio.run(handle_close_songs_async(session))
+    asyncio.run(handle_close_songs_async(session, skip_user_input=True))

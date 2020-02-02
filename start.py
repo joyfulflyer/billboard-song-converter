@@ -26,10 +26,8 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.ERROR,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler("example1.log"),
-            logging.StreamHandler()
-        ])
+        handlers=[logging.FileHandler("log1.log"),
+                  logging.StreamHandler()])
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     args = argument_parser.get_args()
