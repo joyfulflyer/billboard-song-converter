@@ -51,7 +51,7 @@ class TestSimilarSongHandling(unittest.TestCase):
     def test_handle_and(self):
         first = self.TestEntry("Baby I'm Scared Of You", "Womack And Womack")
         second = self.TestEntry("Baby I'm Scared Of You", "Womack & Womack")
-        self.assertFalse(further_comparison_checks(first, second))
+        self.assertTrue(further_comparison_checks(first, second))
 
     def test_handle_odd_spacing(self):
         first = self.TestEntry("Baby I'm-a Want You", "Bread")
@@ -91,7 +91,7 @@ test_set = [
                              "The 5th Dimension"), 31.251286, False),
     (("Aquarius/let The Sunshine In",
       "5Th Dimension"), ("Aquarius/Let The Sunshine In", "The 5th Dimension"),
-     28.574797, False),  # Should we remove the?
+     28.574797, True), 
     (("Aquarius/let The Sunshine In", "The Fifth Dimension"),
      ("Aquarius/Let The Sunshine In",
       "The 5th Dimension"), 26.086386, False),  # At least for v1
@@ -133,7 +133,7 @@ set_2 = [
       "Natalie La Rose Featuring Fetty Wap"), 24.209156, True),
     (("Arthur's Theme (the Best That You Can Do)", "Christopher Cross"),
      ("Arthur's Theme (Best That You Can Do)",
-      "Christopher Cross"), 34.46467, False),
+      "Christopher Cross"), 34.46467, True),
     (("As Long As You Love Me", "Justin Bieber Ft Big Sean"),
      ("As Long As You Love Me",
       "Justin Bieber Featuring Big Sean"), 31.74562, True),
@@ -143,7 +143,7 @@ set_2 = [
     (("As Your Friend", "Afrojack Ft Chris Brown"),
      ("As Your Friend", "Afrojack Featuring Chris Brown"), 23.930288, True),
     (("Ashes To Ashes", "Mindbenders"), ("Ashes To Ashes", "The Mindbenders"),
-     31.762012, False),
+     31.762012, True),
     (("Ass Back Home", "Gym Class Heroes Ft Neon Hitch"),
      ("Ass Back Home",
       "Gym Class Heroes Featuring Neon Hitch"), 32.34549, True),
@@ -152,16 +152,16 @@ set_2 = [
     (("At The Club/saturday Night At The Movies {1972}", "The Drifters"),
      ("Saturday Night At The Movies", "The Drifters"), 33.330772, False),
     (("At The Top Of The Stairs", "Formations"),
-     ("At The Top Of The Stairs", "The Formations"), 29.022585, False),
+     ("At The Top Of The Stairs", "The Formations"), 29.022585, True),
     (("At This Moment", "Billy Vera And The Beaters"), ("At This Moment",
                                                         "Billy & The Beaters"),
      25.520048, False),  # How about 'and'?
     (("Atomic Dog", "George Clinton"),
      ("Atomic Dog", "George Clinton Featuring Coolio"), 24.881117, False),
     (("Ava Adore", "Smashing Pumpkins"),
-     ("Ava Adore", "The Smashing Pumpkins"), 30.889868, False),
+     ("Ava Adore", "The Smashing Pumpkins"), 30.889868, True),
     (("Avenues & Alleyways", "Tony Christie"),
-     ("Avenues And Alleyways", "Tony Christie"), 29.316208, False),
+     ("Avenues And Alleyways", "Tony Christie"), 29.316208, True),
     (("Ayo Technology", "50 Cent/Justin Timberlake"),
      ("Ayo Technology",
       "50 Cent Featuring Justin Timberlake & Timbaland"), 33.509483, False),
@@ -187,12 +187,12 @@ set_2 = [
      ("Keep Ya Head Up", "2Pac"), 25.941832, False),
     (("Baby Face", "Wing And A Prayer Fife And Drum Corps"),
      ("Baby Face",
-      "The Wing And A Prayer Fife & Drum Corps."), 29.256271, False),
+      "The Wing And A Prayer Fife & Drum Corps."), 29.256271, True),
     (("Baby I Love Your Way - Free Bird", "Will To Power"),
      ("Baby, I Love Your Way/Freebird Medley",
       "Will To Power"), 21.735329, False),
     (("Baby I'm Scared Of You", "Womack And Womack"),
-     ("Baby I'm Scared Of You", "Womack & Womack"), 28.505117, False),
+     ("Baby I'm Scared Of You", "Womack & Womack"), 28.505117, True),
     (("Baby I'm-a Want You", "Bread"), ("Baby I'm - A Want You", "Bread"),
      20.960228, True),
     (("Baby It's Cold Outside", "Brett Eldredge/Meghan Trainor"),
