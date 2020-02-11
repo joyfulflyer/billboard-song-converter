@@ -43,7 +43,5 @@ if __name__ == "__main__":
         limit = float('inf')
         if args.number >= 0:
             limit = args.number
-        asyncio.run(
-            similar_songs.handle_close_songs_async(
-                session, skip_user_input=args.user_input_disabled,
-                limit=limit))
+        similar_songs.handle_close_songs(
+            session, skip_user_input=args.user_input_disabled, limit=limit)

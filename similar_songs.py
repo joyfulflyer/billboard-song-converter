@@ -2,9 +2,9 @@ import itertools
 import logging
 import re
 import string
+import sys
 import time
 from collections import namedtuple
-import asyncio
 
 import db_retriever
 import db_saver
@@ -17,7 +17,7 @@ TRANSFORMS = {re.compile(r' and '): '&', re.compile(r' with '): '&'}
 logger = logging.getLogger(__name__)
 
 
-async def handle_close_songs_async(session, skip_user_input=False, limit=5000):
+def handle_close_songs(session, skip_user_input=False, limit=5000):
     startTime = time.time()
     for entries in _gen(session, limit):
         groupStartTime = time.time()
@@ -98,6 +98,8 @@ def _handle_potential_same_song(entry, session, bypass=False):
                 elif should_create_new.isnumeric():
                     db_song = namedtuple('Song', field_names=['id'])
                     db_song.id = int(should_create_new)
+                elif should_create_new.lower().strip() == 'q':
+                    sys.exit(0)
                 else:
                     db_song = _create_db(entry.name, entry.artist, session)
         else:
@@ -201,7 +203,7 @@ def _get_input_for_song(entry, results):
             "Result: name= {:<55s} artist= {:<50s} id= {:<10s}\n".format(
                 result.name, result.artist, result.meta.id))
     lines.append(
-        f"Create new song? (y/n) no entry creates a song or a number uses that as an id: "
+        f"Create new song? (y/n) no entry creates a song or a number uses that as an id, q to quit: "
     )
     return input(''.join(lines))
 
@@ -236,4 +238,4 @@ if __name__ == '__main__':
         ])
 
     session = Session.get_session()()
-    asyncio.run(handle_close_songs_async(session, skip_user_input=True))
+    handle_close_songs(session, skip_user_input=True)
