@@ -60,6 +60,23 @@ def get_songs_except_id_pagination(session, id, limit=200000, offset=0):
         Song.id != id).limit(limit).offset(offset).all()
 
 
+def get_songs_with_alternate_entries_except_id_pagination(
+    session, id, limit=200000, offset=0):
+    # Below is super slow. Should figure out what I need
+    # For each sone I need all unique name/artists
+    # I can either get entries group by name, artist then ...
+    # The issue becomes pagination
+    # get entries, group by name, artist, order by song id
+
+    songs = session.query(
+        Entry.name, Entry.artist,
+        Entry.song_id).filter(Entry.song_id != id).group_by(
+            Entry.name, Entry.artist, Entry.song_id).order_by(
+                Entry.song_id).limit(limit).offset(offset).all()
+
+    return songs
+
+
 def get_entries_with_song_id_pagination(session, id, limit=200000, offset=0):
     return session.query(Entry).filter_by(song_id=id).order_by(
         Entry.name, Entry.artist).limit(limit).offset(offset).all()
