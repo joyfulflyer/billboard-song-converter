@@ -11,7 +11,7 @@ import Session
 from elasticsearch_client.client import global_connect
 
 MIN_SAFE_SCORE = 25
-STEP = 2000
+STEP = 5000
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ async def add_existing_songs_async(session):
         logging.error(
             f'Took {time.strftime("%H:%M:%S", time.gmtime(diff))} for {STEP} songs'
         )
-        await asyncio.sleep(0.5)  # To try to prevent timeouts
+        await asyncio.sleep(0.1)  # To try to prevent timeouts
 
     finalTime = time.time()
     diff = finalTime - startTime

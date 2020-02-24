@@ -23,12 +23,17 @@ else:
 
 
 def create_searchable_from_song(song):
-    searchable = SearchableSong(name=song.name, artist=song.artist)
-    searchable.meta.id = song.id
-    searchable.save()
+    song_dict = {'entries': [(song.name, song.artist)], 'songId': song.id}
+    create_searchable_from_song_dict(song_dict)
 
 
 def create_searchable_from_song_dict(song_dict):
+    '''
+    Input should look like: {
+        entries : [(name, artist)],
+        songId: songId
+    }
+    '''
     names = list(map(lambda entry: entry[0], song_dict['entries']))
     artists = list(map(lambda entry: entry[1], song_dict['entries']))
     searchable = SearchableSong(name=names, artist=artists)
@@ -39,12 +44,6 @@ def create_searchable_from_song_dict(song_dict):
 async def create_searchable_from_song_dict_async(song_dict):
     await asyncio.get_running_loop().run_in_executor(
         None, functools.partial(create_searchable_from_song_dict, song_dict))
-
-
-async def create_searchable_from_song_async(song):
-    loop = asyncio.get_running_loop()
-    await loop.run_in_executor(
-        None, functools.partial(create_searchable_from_song, song))
 
 
 def search_name_artist(name, artist):

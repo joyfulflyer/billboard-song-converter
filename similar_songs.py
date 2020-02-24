@@ -71,6 +71,7 @@ def _handle_group(group, session, skip_user_input=False):
 def _handle_potential_same_song(entry, session, bypass=False):
     # Check to see if we have an exact match
     # If we don't, check search and ask
+    # need to update search if alternate found - if the song id is the same
     song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
                                                     session)
     song_count = song_query.count()
@@ -115,9 +116,9 @@ def further_comparison_checks(entry, search_result):
     # compare
     comparison_object = SongComparison()
     comparison_object.entry_name = entry.name
-    comparison_object.search_name = search_result.name
+    comparison_object.search_name = search_result.name[0]
     comparison_object.entry_artist = entry.artist
-    comparison_object.search_artist = search_result.artist
+    comparison_object.search_artist = search_result.artist[0]
 
     lower_cased = _strip_and_lower(comparison_object)
     if lower_cased.compare():
@@ -147,12 +148,6 @@ def further_comparison_checks(entry, search_result):
 def _create_db(name, artist, session):
     db_song = db_saver.create_song(name, artist, session)
     elastic.create_searchable_from_song(db_song)
-    return db_song
-
-
-async def _create_db_async(name, artist, session):
-    db_song = db_saver.create_song(name, artist, session)
-    await elastic.create_searchable_from_song_async(db_song)
     return db_song
 
 
@@ -201,7 +196,7 @@ def _get_input_for_song(entry, results):
     for result in results:
         lines.append(
             "Result: name= {:<55s} artist= {:<50s} id= {:<10s}\n".format(
-                result.name, result.artist, result.meta.id))
+                result.name[0], result.artist[0], result.meta.id))
     lines.append(
         f"Create new song? (y/n) no entry creates a song or a number uses that as an id, q to quit: "
     )
@@ -238,4 +233,4 @@ if __name__ == '__main__':
         ])
 
     session = Session.get_session()()
-    handle_close_songs(session, skip_user_input=True)
+    handle_close_songs(session, skip_user_input=False)
