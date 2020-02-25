@@ -104,7 +104,8 @@ test_set = [
      (["I Can't Stand It Ft Captain Hollywood"],
       ["Twenty4Seven Featuring Captain Hollywood"]), 27.288927, False),
     (("Are You Getting Enough Of What Makes You Happy", "Hot Chocolate"),
-     (["Are You Getting Enough Happiness"], ["Hot Chocolate"]), 26.426823, False),
+     (["Are You Getting Enough Happiness"], ["Hot Chocolate"
+                                             ]), 26.426823, False),
     (("Are You Happy Now", "Michelle Branch"),
      (["Are You Happy Now?"], ["Michelle Branch"]), 25.46182, True),
     (("Are You Lonesome Tonight", "Elvis Presley"),

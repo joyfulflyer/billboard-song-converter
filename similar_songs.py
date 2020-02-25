@@ -17,7 +17,10 @@ TRANSFORMS = {re.compile(r' and '): '&', re.compile(r' with '): '&'}
 logger = logging.getLogger(__name__)
 
 
-def handle_close_songs(session, skip_user_input=False, limit=5000):
+def handle_close_songs(session,
+                       skip_user_input=False,
+                       limit=5000,
+                       force_create_new_songs=False):
     startTime = time.time()
     for entries in _gen(session, limit):
         groupStartTime = time.time()
@@ -29,7 +32,8 @@ def handle_close_songs(session, skip_user_input=False, limit=5000):
                                           (entry.name, entry.artist)):
             _handle_group(list(group),
                           session,
-                          skip_user_input=skip_user_input)
+                          skip_user_input=skip_user_input,
+                          force_create_new_songs=force_create_new_songs)
 
         groupFinishTime = time.time()
         diff = groupFinishTime - groupStartTime
@@ -60,15 +64,21 @@ def _gen(session, limit=float('inf')):
         offset = offset + step
 
 
-def _handle_group(group, session, skip_user_input=False):
+def _handle_group(group,
+                  session,
+                  skip_user_input=False,
+                  force_create_new_songs=False):
     entry = group[0]
-    _handle_potential_same_song(entry, session, bypass=skip_user_input)
+    _handle_potential_same_song(entry,
+                                session,
+                                bypass=skip_user_input,
+                                force=force_create_new_songs)
     for e in group:
         e.song_id = entry.song_id
     session.commit()
 
 
-def _handle_potential_same_song(entry, session, bypass=False):
+def _handle_potential_same_song(entry, session, bypass=False, force=False):
     # Check to see if we have an exact match
     # If we don't, check search and ask
     # need to update search if alternate found - if the song id is the same
@@ -91,6 +101,8 @@ def _handle_potential_same_song(entry, session, bypass=False):
             else:
                 if bypass:
                     return
+                if force:
+                    db_song = _create_db(entry.name, entry.artist, session)
                 should_create_new = _get_input_for_song(entry, results.result)
                 if should_create_new.lower().strip() == 'n':
                     songId = first_result.meta.id

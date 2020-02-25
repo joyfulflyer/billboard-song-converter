@@ -86,7 +86,7 @@ def _convert_to_grouped_dict(db_songs):
 
 if __name__ == '__main__':
     logging.basicConfig(
-        level=logging.ERROR,
+        level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.FileHandler("example1.log"),
