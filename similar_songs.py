@@ -99,11 +99,16 @@ def _handle_potential_same_song(entry, session, bypass=False, force=False):
                 db_song = namedtuple('Song', field_names=['id'])
                 db_song.id = int(songId)
             else:
+                should_create_new = ''
                 if bypass:
                     return
+
                 if force:
-                    db_song = _create_db(entry.name, entry.artist, session)
-                should_create_new = _get_input_for_song(entry, results.result)
+                    should_create_new = ''
+                else:
+                    should_create_new = _get_input_for_song(
+                        entry, results.result)
+
                 if should_create_new.lower().strip() == 'n':
                     songId = first_result.meta.id
                     db_song = namedtuple('Song', field_names=['id'])

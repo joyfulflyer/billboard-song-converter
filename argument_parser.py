@@ -25,6 +25,11 @@ def get_args():
         help=
         'For use with merge, disable user input and leave questionable songs untouched',
         dest='user_input_disabled')
+    parser.add_argument('-f',
+                        '--force-create-rest',
+                        action='store_true',
+                        help='Create new songs for questionable songs',
+                        dest='force_create')
     parser.add_argument('-n',
                         '--number',
                         type=int,

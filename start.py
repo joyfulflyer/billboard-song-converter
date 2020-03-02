@@ -32,6 +32,9 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
     args = argument_parser.get_args()
     session = get_session()()
+    limit = float('inf')
+    if args.number >= 0:
+        limit = args.number
     if args.seed:
         asyncio.run(elasticsearch_functions.add_existing_songs_async(session))
     if args.continue_songs:
@@ -40,8 +43,10 @@ if __name__ == "__main__":
         else:
             song_creator.create_in_batch(session, args.number)
     if args.merge:
-        limit = float('inf')
-        if args.number >= 0:
-            limit = args.number
         similar_songs.handle_close_songs(
             session, skip_user_input=args.user_input_disabled, limit=limit)
+    if args.force_create:
+        similar_songs.handle_close_songs(session,
+                                         skip_user_input=False,
+                                         limit=limit,
+                                         force_create_new_songs=True)
