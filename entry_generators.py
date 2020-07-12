@@ -1,20 +1,21 @@
-# song manipulation generators
-# Every function should be a generator that outputs entries for conversion to songs
-#
 import db_retriever
+from instrument import instrument
 
 STEP = 5000
 
 
-def entries_without_song_id_steps(session, limit=float('inf')):
-    step = STEP
+# Applies a step function to the entry func
+# entry_func returns lists (or generators) of entries
+# Iterate over this to get lists to iterate over
+# We're mostly generating a step and an offset but using those to get the lists of entries
+def _step_generator(session, entry_func, limit, batch_size):
+    step = batch_size
     if limit < step:
         step = limit
 
     offset = 0
     while offset + step <= limit:
-        entries = db_retriever.get_entries_with_song_id_pagination(
-            session, -1, limit=step, offset=offset)
+        entries = entry_func(session=session, step=step, offset=offset)
         if len(entries) > 0:
             yield entries
         else:
@@ -22,11 +23,18 @@ def entries_without_song_id_steps(session, limit=float('inf')):
         offset = offset + step
 
 
-def entries_with_no_tiered_songs_singular(session):
-    entries = _all_entries(session)
-    for entry in entries:
-        yield entry
+# Returns individual entries.
+def entries_with_no_tiered_songs_singular(session,
+                                          limit=float('inf'),
+                                          batch_size=STEP):
+    for entries in _step_generator(
+            session, _get_entries_with_no_tiered_song_limited_offset, limit,
+            batch_size):
+        for entry in entries:
+            yield entry
 
 
-def _all_entries(session):
-    return db_retriever.get_entries_with_no_tiered_song(session)
+def _get_entries_with_no_tiered_song_limited_offset(session, step, offset):
+    return db_retriever.get_entries_with_no_tiered_song(session,
+                                                        limit=step,
+                                                        offset=offset)

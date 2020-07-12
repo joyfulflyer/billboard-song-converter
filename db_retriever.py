@@ -106,9 +106,15 @@ def get_entries_with_no_song_id_with_session(session):
     return noSong
 
 
-def get_entries_with_no_tiered_song(session):
-    return session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
+def get_entries_with_no_tiered_song(session, limit=None, offset=None):
+    query = session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
         Tiered_Song_Entry.entry_id == None)
+    if limit is not None:
+        query = query.limit(limit)
+    if offset is not None:
+        query = query.offset(offset)
+
+    return query.all()
 
 
 def get_tierd_song_for(session, name, artist, song_type=SONG_TYPE_BASIC):
