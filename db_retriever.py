@@ -4,6 +4,7 @@ from sqlalchemy import desc, exc
 
 from models.chart import Chart
 from models.entry import Entry
+from models.tiered_song_entry import Tiered_Song_Entry
 from models.song import Song
 
 logger = logging.getLogger(__name__)
@@ -93,14 +94,23 @@ def get_all_entries_with_no_song_id(Session):
     return get_entries_with_no_song_id_with_session(session).all()
 
 
-def get_entries_with_no_song_id(Session, limit=1000):
-    session = Session()
+def get_entries_with_no_song_id(SessionMaker, limit=1000):
+    session = SessionMaker()
     return get_entries_with_no_song_id_with_session(session).limit(limit).all()
 
 
 def get_entries_with_no_song_id_with_session(session):
     noSong = session.query(Entry).filter(Entry.song_id.is_(None))
     return noSong
+
+
+def get_entries_with_no_tiered_song(session):
+    if session is SessionMaker:  # maybe this should be a higher level wrapper?
+        session = session()
+    session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
+        Tiered_Song_Entry.entry_id == None)
+
+    pass
 
 
 def get_song_id_query_for(name, artist, session):
