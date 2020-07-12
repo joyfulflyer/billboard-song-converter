@@ -15,3 +15,8 @@ def get_session(url=None):
         Session = database_connection.connect(url)
         _session_makers[url] = Session
     return _session_makers[url]
+
+
+# proxy for more descriptive name
+def get_session_maker(url=None):
+    return get_session(url)

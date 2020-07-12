@@ -105,12 +105,8 @@ def get_entries_with_no_song_id_with_session(session):
 
 
 def get_entries_with_no_tiered_song(session):
-    if session is SessionMaker:  # maybe this should be a higher level wrapper?
-        session = session()
-    session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
+    return session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
         Tiered_Song_Entry.entry_id == None)
-
-    pass
 
 
 def get_song_id_query_for(name, artist, session):
