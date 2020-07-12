@@ -12,17 +12,17 @@ import elastic
 logger = logging.getLogger(__name__)
 
 
-def process_songs(session, limit):
+def _process_songs(session, limit):
     entry_query = db_retriever.get_entries_with_no_song_id_with_session(
         session).limit(limit)
     if entry_query.count() == 0:
         logger.info("No more songs")
     else:
         for entry in entry_query:
-            entry_to_song(entry, session)
+            _entry_to_song(entry, session)
 
 
-def entry_to_song(entry, session):
+def _entry_to_song(entry, session):
     song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
                                                     session)
     song_count = song_query.count()
@@ -64,7 +64,7 @@ def create_in_batch(session, total, batch_size=100):
     start_time = time.time()
     logger.error("Start time: %r" % (start_time, ))
     for size in _genny(total, batch_size):
-        process_songs(session, size)
+        _process_songs(session, size)
     end_time = time.time()
     elapsed_time = end_time - start_time
     logger.error("Elapsed time: %s" %

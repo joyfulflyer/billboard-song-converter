@@ -29,4 +29,4 @@ def entries_with_no_tiered_songs_singular(session):
 
 
 def _all_entries(session):
-    return db_retriever.get_entries_with_no_tiered_song(session).all()
+    return db_retriever.get_entries_with_no_tiered_song(session)

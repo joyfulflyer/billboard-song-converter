@@ -4,7 +4,7 @@ from models.base import Base
 
 
 class Tiered_Song(Base):
-    __tablename__ = 'tierd_song'
+    __tablename__ = 'tierd_songs'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(256), nullable=False)

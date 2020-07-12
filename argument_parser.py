@@ -35,6 +35,11 @@ def get_args():
                         type=int,
                         help="The number of items to work on, -1 for all",
                         default=-2)
+    parser.add_argument('-t',
+                        '--tier',
+                        action='store_true',
+                        help='Create tiered songs',
+                        dest='tier')
 
     args = parser.parse_args()
     return args

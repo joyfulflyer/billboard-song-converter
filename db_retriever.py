@@ -2,10 +2,12 @@ import logging
 
 from sqlalchemy import desc, exc
 
+from instrument import instrument
 from models.chart import Chart
 from models.entry import Entry
-from models.tiered_song_entry import Tiered_Song_Entry
 from models.song import Song
+from models.tierd_song import SONG_TYPE_BASIC, Tiered_Song
+from models.tiered_song_entry import Tiered_Song_Entry
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +109,13 @@ def get_entries_with_no_song_id_with_session(session):
 def get_entries_with_no_tiered_song(session):
     return session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
         Tiered_Song_Entry.entry_id == None)
+
+
+def get_tierd_song_for(session, name, artist, song_type=SONG_TYPE_BASIC):
+    q = session.query(Tiered_Song).filter(Tiered_Song.name == name,
+                                          Tiered_Song.artist == artist,
+                                          Tiered_Song.song_type == song_type)
+    return q.scalar()  # a bit worried about none here
 
 
 def get_song_id_query_for(name, artist, session):

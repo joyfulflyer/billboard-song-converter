@@ -50,3 +50,6 @@ if __name__ == "__main__":
                                          skip_user_input=False,
                                          limit=limit,
                                          force_create_new_songs=True)
+    if args.tier:
+        import tiered_song_creator
+        tiered_song_creator.SongCreator(session).process_songs()
