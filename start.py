@@ -7,6 +7,7 @@ from sqlalchemy.exc import ProgrammingError
 import elasticsearch_functions
 import similar_songs
 import song_creator
+import tiered_song_creator
 from Session import get_session
 
 sys.path.append("/opt/")
@@ -51,5 +52,4 @@ if __name__ == "__main__":
                                          limit=limit,
                                          force_create_new_songs=True)
     if args.tier:
-        import tiered_song_creator
         tiered_song_creator.SongCreator(session).process_songs()

@@ -13,8 +13,10 @@ def _step_generator(session, entry_func, limit, batch_size):
     if limit < step:
         step = limit
 
+        # step is lower of limit and batch size
+
     offset = 0
-    while offset + step <= limit:
+    while offset <= limit:
         entries = entry_func(session=session, step=step, offset=offset)
         if len(entries) > 0:
             yield entries
@@ -23,13 +25,29 @@ def _step_generator(session, entry_func, limit, batch_size):
         offset = offset + step
 
 
+def _calculate_step(limit, batch_size):
+    step = batch_size
+    if limit < step:
+        step = limit
+    return step
+
+
+# Gives list of steps
+def _step_2(limit, step):
+    offset = 0
+    while offset <= limit:
+        yield offset
+        offset = offset + step
+
+
 # Returns individual entries.
 def entries_with_no_tiered_songs_singular(session,
                                           limit=float('inf'),
                                           batch_size=STEP):
-    for entries in _step_generator(
-            session, _get_entries_with_no_tiered_song_limited_offset, limit,
-            batch_size):
+    step = _calculate_step(limit, batch_size)
+    for offset in _step_2(limit, step):
+        entries = _get_entries_with_no_tiered_song_limited_offset(
+            session, step, offset)
         for entry in entries:
             yield entry
 
