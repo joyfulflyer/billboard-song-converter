@@ -6,7 +6,7 @@ from instrument import instrument
 from models.chart import Chart
 from models.entry import Entry
 from models.song import Song
-from models.tierd_song import SONG_TYPE_BASIC, Tiered_Song
+from models.tiered_song import SONG_TYPE_BASIC, Tiered_Song
 from models.tiered_song_entry import Tiered_Song_Entry
 
 logger = logging.getLogger(__name__)

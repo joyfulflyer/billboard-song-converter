@@ -1,7 +1,7 @@
 import db_retriever
 import db_saver
 import logging
-from models.tierd_song import SONG_TYPE_BASIC
+from models.tiered_song import SONG_TYPE_BASIC
 import entry_generators
 
 logger = logging.getLogger(__name__)

@@ -2,12 +2,12 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 from models.base import Base
-from models.tierd_song import Tiered_Song
+from models.tiered_song import Tiered_Song
 from models.entry import Entry
 
 
 class Tiered_Song_Entry(Base):
-    __tablename__ = 'tierd_song_entry'
+    __tablename__ = 'tiered_song_entry'
 
     id = Column(Integer, primary_key=True)
     tiered_song_id = Column(Integer,
