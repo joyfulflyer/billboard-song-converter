@@ -46,8 +46,12 @@ def entries_with_no_tiered_songs_singular(session,
                                           batch_size=STEP):
     step = _calculate_step(limit, batch_size)
     for offset in _step_2(limit, step):
+        if offset > limit:
+            return
         entries = _get_entries_with_no_tiered_song_limited_offset(
             session, step, offset)
+        if len(entries) == 0:
+            return
         for entry in entries:
             yield entry
 
