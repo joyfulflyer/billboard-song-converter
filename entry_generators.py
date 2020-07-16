@@ -56,3 +56,19 @@ def _get_entries_with_no_tiered_song_limited_offset(session, step, offset):
     return db_retriever.get_entries_with_no_tiered_song(session,
                                                         limit=step,
                                                         offset=offset)
+
+
+def entries_without_song_id_steps(session, limit=float('inf')):
+    step = STEP
+    if limit < step:
+        step = limit
+
+    offset = 0
+    while offset + step <= limit:
+        entries = db_retriever.get_entries_with_song_id_pagination(
+            session, -1, limit=step, offset=offset)
+        if len(entries) > 0:
+            yield entries
+        else:
+            return
+        offset = offset + step

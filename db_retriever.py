@@ -8,6 +8,7 @@ from models.entry import Entry
 from models.song import Song
 from models.tiered_song import SONG_TYPE_BASIC, Tiered_Song
 from models.tiered_song_entry import Tiered_Song_Entry
+from models.tiered_song_link import Tiered_Song_Link
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +109,22 @@ def get_entries_with_no_song_id_with_session(session):
 
 def get_entries_with_no_tiered_song(session, limit=None, offset=None):
     query = session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
+        Tiered_Song_Entry.entry_id == None)
+    if limit is not None:
+        query = query.limit(limit)
+    if offset is not None:
+        query = query.offset(offset)
+
+    return query.all()
+
+
+def get_entries_for_tiered_song(session, tiered_song_id):
+    return session.query(Entry).join(Tiered_Song_Entry).filter(
+        Tiered_Song_Entry.tiered_song_id == tiered_song_id).all()
+
+
+def get_tiered_songs_with_no_link(session, limit=None, offset=None):
+    query = session.query(Tiered_Song).outerjoin(Tiered_Song_Link).filter(
         Tiered_Song_Entry.entry_id == None)
     if limit is not None:
         query = query.limit(limit)

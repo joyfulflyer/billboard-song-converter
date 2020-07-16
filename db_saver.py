@@ -9,6 +9,7 @@ from models.entry import Entry
 from models.song import Song
 from models.tiered_song import SONG_TYPE_BASIC, Tiered_Song
 from models.tiered_song_entry import Tiered_Song_Entry
+from models.tiered_song_link import Tiered_Song_Link
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,11 @@ def create_tiered_song_link(session, entry, tiered_song):
     new_entry = Tiered_Song_Entry(entry_id=entry.id,
                                   tiered_song_id=tiered_song.id)
     return _commit_and_return(session, new_entry)
+
+
+def create_link_between_tiered_songs(session, from_id, to_id):
+    new_link = Tiered_Song_Link(from_id=from_id, to_id=to_id)
+    return _commit_and_return(session, new_link)
 
 
 def _commit_and_return(session, item):
