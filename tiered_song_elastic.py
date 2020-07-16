@@ -44,12 +44,10 @@ class SongCreator():
             self._create_song_links(basic_song=song, elastic_song=es)
             elastic.create_searchable_from_song(es)  # hope this works
 
-        pass
-
     # Link the entries of the basic song to the elastic song
     def _create_entry_links(self, basic_song, elastic_song):
         entries = db_retriever.get_entries_for_tiered_song(
-            self.session, basic_song)
+            self.session, basic_song.id)
         for entry in entries:
             self._create_link(entry, elastic_song)
 

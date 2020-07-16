@@ -112,8 +112,8 @@ def get_entries_with_no_tiered_song(session, limit=None, offset=None):
         Tiered_Song_Entry.entry_id == None)
     if limit is not None:
         query = query.limit(limit)
-    if offset is not None:
-        query = query.offset(offset)
+    # if offset is not None:
+    #     query = query.offset(offset)
 
     return query.all()
 
@@ -125,8 +125,9 @@ def get_entries_for_tiered_song(session, tiered_song_id):
 
 @instrument
 def get_tiered_songs_with_no_link(session, limit=None, offset=None):
-    query = session.query(Tiered_Song).outerjoin(Tiered_Song_Link).filter(
-        Tiered_Song_Entry.entry_id == None)
+    query = session.query(Tiered_Song).outerjoin(
+        Tiered_Song_Link, Tiered_Song.id == Tiered_Song_Link.from_id).filter(
+            Tiered_Song_Link.from_id == None)
     if limit is not None:
         query = query.limit(limit)
     if offset is not None:
