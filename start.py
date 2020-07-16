@@ -53,3 +53,7 @@ if __name__ == "__main__":
                                          force_create_new_songs=True)
     if args.tier:
         tiered_song_creator.SongCreator(session).process_songs()
+
+    if args.elastic_tier:
+        import tiered_song_elastic
+        tiered_song_elastic.SongCreator(session).batch_all()

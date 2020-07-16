@@ -17,7 +17,10 @@ class SongCreator():
         pass
 
     def batch_all(self, batch_size=1000):
-        pass
+        song_list = db_retriever.get_tiered_songs_with_no_link(self.session,
+                                                               limit=10)
+        for song in song_list:
+            self._match_songs(song)
 
 
 # these will be tiered songs

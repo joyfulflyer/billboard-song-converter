@@ -40,6 +40,11 @@ def get_args():
                         action='store_true',
                         help='Create tiered songs',
                         dest='tier')
+    parser.add_argument('-e',
+                        '--elastic',
+                        action='store_true',
+                        help='Create known uniques with elastic search',
+                        dest='elastic_tier')
 
     args = parser.parse_args()
     return args

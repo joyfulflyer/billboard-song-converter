@@ -123,6 +123,7 @@ def get_entries_for_tiered_song(session, tiered_song_id):
         Tiered_Song_Entry.tiered_song_id == tiered_song_id).all()
 
 
+@instrument
 def get_tiered_songs_with_no_link(session, limit=None, offset=None):
     query = session.query(Tiered_Song).outerjoin(Tiered_Song_Link).filter(
         Tiered_Song_Entry.entry_id == None)
