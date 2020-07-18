@@ -136,6 +136,20 @@ def get_tiered_songs_with_no_link(session, limit=None, offset=None):
     return query.all()
 
 
+def get_songs_with_no_chart_song(session):
+    query = session \
+                .query(Tiered_Song) \
+                .filter(Tiered_Song.song_type == SONG_TYPE_BASIC) \
+                .outerjoin(Tiered_Song_Link,
+                           Tiered_Song.id == Tiered_Song_Link.from_id) \
+                .join(Tiered_Song,
+                      Tiered_Song_Link.to_id == Tiered_Song.id) \
+                .filter(Tiered_Song.song_type == 'basic|official')._or(Tiered_Song.song_type == 'basic|uk') #this is just for the join
+                .filter(Tiered_Song_Entry.from_id == None) # songs that do not have a match
+
+    pass
+
+
 def get_tierd_song_for(session, name, artist, song_type=SONG_TYPE_BASIC):
     q = session.query(Tiered_Song).filter(Tiered_Song.name == name,
                                           Tiered_Song.artist == artist,
@@ -147,3 +161,7 @@ def get_song_id_query_for(name, artist, session):
     return session.query(Song.id).join(Entry).filter(
         Entry.name == name,
         Entry.artist == artist).filter(Entry.song_id != -1).group_by(Song.id)
+
+
+def finish_transaction(session):
+    session.commit()
