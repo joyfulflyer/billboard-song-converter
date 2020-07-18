@@ -15,13 +15,6 @@ sys.path.append("/opt/")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-
-def create_songs(session):
-    logger.info("Creating songs")
-    song_creator.batch_all(session)
-    logger.info("Created songs")
-
-
 if __name__ == "__main__":
     import argument_parser
     logging.basicConfig(
@@ -40,7 +33,9 @@ if __name__ == "__main__":
         asyncio.run(elasticsearch_functions.add_existing_songs_async(session))
     if args.continue_songs:
         if args.number < 0:  # -1 and -2 are create all here
-            create_songs(session)
+            logger.info("Creating songs")
+            song_creator.batch_all(session)
+            logger.info("Created songs")
         else:
             song_creator.create_in_batch(session, args.number)
     if args.merge:
@@ -52,8 +47,10 @@ if __name__ == "__main__":
                                          limit=limit,
                                          force_create_new_songs=True)
     if args.tier:
-        tiered_song_creator.SongCreator(session).process_songs()
+        tiered_song_creator.SongCreator(session).batch_all()
 
     if args.elastic_tier:
         import tiered_song_elastic
         tiered_song_elastic.SongCreator(session).batch_all()
+
+    logger.info("done")

@@ -3,21 +3,22 @@ import db_saver
 import logging
 from models.tiered_song import SONG_TYPE_BASIC
 import entry_generators
+import song_creator_base
 
 logger = logging.getLogger(__name__)
 
 
-class SongCreator():
+class SongCreator(song_creator_base.SongCreator):
     def __init__(self, session):
         self.session = session
 
     def create_in_batch(self, total, batch_size):
-        pass
+        raise NotImplementedError
 
-    def batch_all(self, batch_size):
-        pass
+    def batch_all(self, batch_size=float('inf')):
+        self._process_songs()
 
-    def process_songs(self):
+    def _process_songs(self):
         for entry in entry_generators.entries_with_no_tiered_songs_singular(
                 self.session):
             self._entry_to_tiered_song(entry)

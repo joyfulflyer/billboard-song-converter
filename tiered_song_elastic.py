@@ -4,12 +4,13 @@ import logging
 from models.tiered_song import SONG_TYPE_BASIC, SONG_TYPE_ELASTIC
 import entry_generators
 from collections import namedtuple
+from song_creator_base import SongCreator as BaseSongCreator
 import elastic
 
 logger = logging.getLogger(__name__)
 
 
-class SongCreator():
+class SongCreator(BaseSongCreator):
     def __init__(self, session):
         self.session = session
 
