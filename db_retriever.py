@@ -65,7 +65,7 @@ def get_songs_except_id_pagination(session, id, limit=200000, offset=0):
 
 
 def get_songs_with_alternate_entries_except_id_pagination(
-    session, id, limit=200000, offset=0):
+        session, id, limit=200000, offset=0):
     # Below is super slow. Should figure out what I need
     # For each sone I need all unique name/artists
     # I can either get entries group by name, artist then ...
@@ -136,18 +136,19 @@ def get_tiered_songs_with_no_link(session, limit=None, offset=None):
     return query.all()
 
 
-def get_songs_with_no_chart_song(session):
-    query = session \
-                .query(Tiered_Song) \
-                .filter(Tiered_Song.song_type == SONG_TYPE_BASIC) \
-                .outerjoin(Tiered_Song_Link,
-                           Tiered_Song.id == Tiered_Song_Link.from_id) \
-                .join(Tiered_Song,
-                      Tiered_Song_Link.to_id == Tiered_Song.id) \
-                .filter(Tiered_Song.song_type == 'basic|official')._or(Tiered_Song.song_type == 'basic|uk') #this is just for the join
-                .filter(Tiered_Song_Entry.from_id == None) # songs that do not have a match
-
-    pass
+# def get_songs_with_no_chart_song(session):
+#     query = session \
+#                 .query(Tiered_Song) \
+#                 .filter(Tiered_Song.song_type == SONG_TYPE_BASIC) \
+#                 .outerjoin(Tiered_Song_Link,
+#                            Tiered_Song.id == Tiered_Song_Link.from_id) \
+#                 .join(Tiered_Song,
+#                       Tiered_Song_Link.to_id == Tiered_Song.id) \
+#                 .filter(Tiered_Song.song_type == 'basic|official') \
+#                 ._or(Tiered_Song.song_type == 'basic|uk') \
+#                 .filter(Tiered_Song_Entry.from_id == None) # songs that do not have a match
+#     #this is just for the join
+#     pass
 
 
 def get_tierd_song_for(session, name, artist, song_type=SONG_TYPE_BASIC):
