@@ -45,6 +45,10 @@ def get_args():
                         action='store_true',
                         help='Create known uniques with elastic search',
                         dest='elastic_tier')
+    parser.add_argument('-w',
+                        '--wait',
+                        type=int,
+                        help="Wait for the db to be available for n seconds")
 
     args = parser.parse_args()
     return args

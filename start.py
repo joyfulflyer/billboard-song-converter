@@ -25,7 +25,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     args = argument_parser.get_args()
-    session = get_session()()
+    session = get_session(timeout=args.wait)()
     limit = float('inf')
     if args.number >= 0:
         limit = args.number
