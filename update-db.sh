@@ -56,22 +56,25 @@ docker exec -i $DB_CONTAINER_NAME mysqldump -u $DB_USERNAME --password=$PASS $DA
 docker stop $DB_CONTAINER_NAME
 # docker network rm chart
 
-# upload gzipped backup to s3
-gzip -k $FILE_NAME
-
-aws s3 cp $FILE_NAME.gz s3://billboard-viewer-db
-
-rm $FILE_NAME.gz
-
 # build docker container
 
 # create temp docker file
-printf "FROM mysql:8.0.21\n\nCOPY $FILE_NAME /docker-entrypoint-initdb.d/" >tempdockerfile
+(
+    printf "FROM mysql:8.0.21\n\nCOPY $FILE_NAME /docker-entrypoint-initdb.d/" >tempdockerfile
+    docker build --pull --rm -f "./tempdockerfile" --tag $DB_CONTAINER_TIERS_TAG .
+    docker tag $DB_CONTAINER_TIERS_TAG $DB_CONTAINER_AUTO_TAG
+    docker push $DB_CONTAINER_TIERS_TAG
+    docker push $DB_CONTAINER_AUTO_TAG
+) &
 
-docker build --pull --rm -f "./tempdockerfile" --tag $DB_CONTAINER_TIERS_TAG .
-docker tag $DB_CONTAINER_TIERS_TAG $DB_CONTAINER_AUTO_TAG
-docker push $DB_CONTAINER_TIERS_TAG
-docker push $DB_CONTAINER_AUTO_TAG
+# upload gzipped backup to s3
+(
+    gzip -k $FILE_NAME
+    aws s3 cp $FILE_NAME.gz s3://billboard-viewer-db
+    rm $FILE_NAME.gz
+) &
+
+wait
 
 #cleanup
 cd ..
