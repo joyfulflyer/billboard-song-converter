@@ -33,19 +33,7 @@ docker run -d \
 
 sleep 1m
 
-# does not have wait for db functionality yet
 pipenv run python start.py -t -w 180
-
-# docker run \
-#     --name grab \
-#     -e DATABASE=billboard_charts \
-#     -e DB_TYPE=mysql \
-#     -e DB_USERNAME=chart \
-#     -e DB_HOST=autodb:3306 \
-#     -e PASS=temporaryaccess \
-#     --rm \
-#     --network chart \
-#     registry.gitlab.com/joyfulflyer/billboard-grabber python start.py -u -w 180
 
 mkdir $TEMP_DIRECTORY
 cd $TEMP_DIRECTORY
