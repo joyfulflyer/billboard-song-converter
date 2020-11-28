@@ -9,6 +9,7 @@ from collections import namedtuple
 import db_retriever
 import db_saver
 import elastic
+import entry_generators
 
 ARTIST_WORDS_TO_IGNORE = ['feat', 'featuring', 'vs', 'ft', 'the']
 STEP = 5000
@@ -22,7 +23,8 @@ def handle_close_songs(session,
                        limit=5000,
                        force_create_new_songs=False):
     startTime = time.time()
-    for entries in _gen(session, limit):
+    for entries in entry_generators.entries_without_song_id_steps(
+            session, limit):
         groupStartTime = time.time()
         sorted_entries = sorted(entries,
                                 key=lambda entry: (entry.name, entry.artist))
@@ -46,22 +48,6 @@ def handle_close_songs(session,
     logger.error(
         f'Took {time.strftime("%H:%M:%S", time.gmtime(diff))} to correct {limit} songs'
     )
-
-
-def _gen(session, limit=float('inf')):
-    step = STEP
-    if limit < step:
-        step = limit
-
-    offset = 0
-    while offset + step <= limit:
-        entries = db_retriever.get_entries_with_song_id_pagination(
-            session, -1, limit=step, offset=offset)
-        if len(entries) > 0:
-            yield entries
-        else:
-            return
-        offset = offset + step
 
 
 def _handle_group(group,

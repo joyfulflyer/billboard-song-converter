@@ -7,19 +7,13 @@ from sqlalchemy.exc import ProgrammingError
 import elasticsearch_functions
 import similar_songs
 import song_creator
+import tiered_song_creator
 from Session import get_session
 
 sys.path.append("/opt/")
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-def create_songs(session):
-    logger.info("Creating songs")
-    song_creator.batch_all(session)
-    logger.info("Created songs")
-
 
 if __name__ == "__main__":
     import argument_parser
@@ -31,7 +25,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     args = argument_parser.get_args()
-    session = get_session()()
+    session = get_session(timeout=args.wait)()
     limit = float('inf')
     if args.number >= 0:
         limit = args.number
@@ -39,7 +33,9 @@ if __name__ == "__main__":
         asyncio.run(elasticsearch_functions.add_existing_songs_async(session))
     if args.continue_songs:
         if args.number < 0:  # -1 and -2 are create all here
-            create_songs(session)
+            logger.info("Creating songs")
+            song_creator.batch_all(session)
+            logger.info("Created songs")
         else:
             song_creator.create_in_batch(session, args.number)
     if args.merge:
@@ -50,3 +46,11 @@ if __name__ == "__main__":
                                          skip_user_input=False,
                                          limit=limit,
                                          force_create_new_songs=True)
+    if args.tier:
+        tiered_song_creator.SongCreator(session).batch_all()
+
+    if args.elastic_tier:
+        import tiered_song_elastic
+        tiered_song_elastic.SongCreator(session).batch_all()
+
+    logger.info("done")

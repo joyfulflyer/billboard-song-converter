@@ -2,9 +2,13 @@ import logging
 
 from sqlalchemy import desc, exc
 
+from instrument import instrument
 from models.chart import Chart
 from models.entry import Entry
 from models.song import Song
+from models.tiered_song import SONG_TYPE_BASIC, Tiered_Song
+from models.tiered_song_entry import Tiered_Song_Entry
+from models.tiered_song_link import Tiered_Song_Link
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +65,7 @@ def get_songs_except_id_pagination(session, id, limit=200000, offset=0):
 
 
 def get_songs_with_alternate_entries_except_id_pagination(
-    session, id, limit=200000, offset=0):
+        session, id, limit=200000, offset=0):
     # Below is super slow. Should figure out what I need
     # For each sone I need all unique name/artists
     # I can either get entries group by name, artist then ...
@@ -93,8 +97,8 @@ def get_all_entries_with_no_song_id(Session):
     return get_entries_with_no_song_id_with_session(session).all()
 
 
-def get_entries_with_no_song_id(Session, limit=1000):
-    session = Session()
+def get_entries_with_no_song_id(SessionMaker, limit=1000):
+    session = SessionMaker()
     return get_entries_with_no_song_id_with_session(session).limit(limit).all()
 
 
@@ -103,7 +107,47 @@ def get_entries_with_no_song_id_with_session(session):
     return noSong
 
 
+def get_entries_with_no_tiered_song(session, limit=None, offset=None):
+    query = session.query(Entry).outerjoin(Tiered_Song_Entry).filter(
+        Tiered_Song_Entry.entry_id == None)
+    if limit is not None:
+        query = query.limit(limit)
+    # if offset is not None:
+    #     query = query.offset(offset)
+
+    return query.all()
+
+
+def get_entries_for_tiered_song(session, tiered_song_id):
+    return session.query(Entry).join(Tiered_Song_Entry).filter(
+        Tiered_Song_Entry.tiered_song_id == tiered_song_id).all()
+
+
+@instrument
+def get_tiered_songs_with_no_link(session, limit=None, offset=None):
+    query = session.query(Tiered_Song).outerjoin(
+        Tiered_Song_Link, Tiered_Song.id == Tiered_Song_Link.from_id).filter(
+            Tiered_Song_Link.from_id == None)
+    if limit is not None:
+        query = query.limit(limit)
+    if offset is not None:
+        query = query.offset(offset)
+
+    return query.all()
+
+
+def get_tierd_song_for(session, name, artist, song_type=SONG_TYPE_BASIC):
+    q = session.query(Tiered_Song).filter(Tiered_Song.name == name,
+                                          Tiered_Song.artist == artist,
+                                          Tiered_Song.song_type == song_type)
+    return q.scalar()  # a bit worried about none here
+
+
 def get_song_id_query_for(name, artist, session):
     return session.query(Song.id).join(Entry).filter(
         Entry.name == name,
         Entry.artist == artist).filter(Entry.song_id != -1).group_by(Song.id)
+
+
+def finish_transaction(session):
+    session.commit()

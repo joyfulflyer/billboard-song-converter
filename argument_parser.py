@@ -35,6 +35,20 @@ def get_args():
                         type=int,
                         help="The number of items to work on, -1 for all",
                         default=-2)
+    parser.add_argument('-t',
+                        '--tier',
+                        action='store_true',
+                        help='Create tiered songs',
+                        dest='tier')
+    parser.add_argument('-e',
+                        '--elastic',
+                        action='store_true',
+                        help='Create known uniques with elastic search',
+                        dest='elastic_tier')
+    parser.add_argument('-w',
+                        '--wait',
+                        type=int,
+                        help="Wait for the db to be available for n seconds")
 
     args = parser.parse_args()
     return args
