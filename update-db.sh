@@ -14,12 +14,19 @@ export PIPENV_DONT_LOAD_ENV=1
 
 DB_CONTAINER_AUTO_TAG=registry.gitlab.com/joyfulflyer/billboard-db:auto
 DB_CONTAINER_TIERS_TAG=registry.gitlab.com/joyfulflyer/billboard-db:tiers
+DB_CONTAINER_LATEST_TAG=registry.gitlab.com/joyfulflyer/billboard-db:latest
+SONG_CONVERTER_TAG=registry.gitlab.com/joyfulflyer/billboard-song-converter:latest
+
 TEMP_DIRECTORY=temp
 
 FILE_NAME=songs$(date +"%Y%m%d")-tier.sql
 DB_CONTAINER_NAME=tierdb
+NETWORK_NAME=songnetwork
+
+docker network create $NETWORK_NAME
 
 docker pull $DB_CONTAINER_AUTO_TAG
+docker pull $SONG_CONVERTER_TAG
 
 docker run -d \
     -e MYSQL_DATABASE=$DATABASE \
@@ -27,13 +34,23 @@ docker run -d \
     -e MYSQL_PASSWORD=$PASS \
     -e MYSQL_RANDOM_ROOT_PASSWORD=true \
     --name $DB_CONTAINER_NAME \
+    --network $NETWORK_NAME \
     --rm \
-    -p 3306:3306 \
     $DB_CONTAINER_AUTO_TAG
 
 sleep 1m
 
-pipenv run python start.py -t -w 180
+# pipenv run python start.py -t -w 180
+docker run \
+    -e DATABASE=$DATABASE \
+    -e DB_TYPE=mysql \
+    -e DB_USERNAME=$DB_USERNAME \
+    -e DB_HOST=$DB_CONTAINER_NAME:3306 \
+    -e PASS=$PASS \
+    --network $NETWORK_NAME \
+    --rm \
+    $SONG_CONVERTER_TAG \
+    python start.py -t -w 180
 
 mkdir $TEMP_DIRECTORY
 cd $TEMP_DIRECTORY
@@ -41,8 +58,10 @@ cd $TEMP_DIRECTORY
 docker exec -i $DB_CONTAINER_NAME mysqldump -u $DB_USERNAME --password=$PASS $DATABASE >$FILE_NAME
 
 # docker cleanup
-docker stop $DB_CONTAINER_NAME
-# docker network rm chart
+(
+    docker stop $DB_CONTAINER_NAME
+    docker network rm $NETWORK_NAME
+)
 
 # build docker container
 
@@ -53,14 +72,14 @@ docker stop $DB_CONTAINER_NAME
     docker tag $DB_CONTAINER_TIERS_TAG $DB_CONTAINER_AUTO_TAG
     docker push $DB_CONTAINER_TIERS_TAG
     docker push $DB_CONTAINER_AUTO_TAG
-) 
+)
 
 # upload gzipped backup to s3
 (
     gzip -k $FILE_NAME
     aws s3 cp $FILE_NAME.gz s3://billboard-viewer-db
     rm $FILE_NAME.gz
-) 
+)
 
 wait
 
