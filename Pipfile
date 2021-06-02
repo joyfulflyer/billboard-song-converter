@@ -9,16 +9,11 @@ yapf = "*"
 rope = "*"
 
 [packages]
-billboard-py = "*"
-flask-sqlalchemy = "*"
-flask = "*"
 PyMySQL = "*"
 sqlalchemy = "*"
-beautifulsoup4 = "*"
-requests = "*"
 cryptography = "*"
 elasticsearch = "*"
 elasticsearch-dsl = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
