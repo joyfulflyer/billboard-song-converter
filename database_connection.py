@@ -23,10 +23,15 @@ def connect(url):
     return Session
 
 
-def create_url_from_parts(username, password, host, dbname, db_type="mysql+pymysql"):
-    password = urllib.parse.quote_plus(password)
-    url = "%s://%s:%s@%s/%s" % (db_type, username, password, host, dbname)
-    logger.info("Created mysql url for %s/%s" % (host, dbname))
+def create_url_from_parts(username="", password="", host="", dbname="", db_type="mysql+pymysql"):
+    url = ""
+    if 'mysql' in db_type:    
+        password = urllib.parse.quote_plus(password)
+        url = "%s://%s:%s@%s/%s" % (db_type, username, password, host, dbname)
+    elif 'sqlite' in db_type:
+        
+        pass
+    logger.info("Created %s url for %s/%s" % (db_type, host, dbname))
     return url
 
 
