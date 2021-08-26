@@ -15,7 +15,8 @@ sys.path.append("/opt/")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-if __name__ == "__main__":
+
+def _main():
     import argument_parser
     logging.basicConfig(
         level=logging.ERROR,
@@ -25,6 +26,9 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     args = argument_parser.get_args()
+    if (args.copy != None):
+        logger.error(args.copy)
+        return
     session = get_session(timeout=args.wait)()
     limit = float('inf')
     if args.number >= 0:
@@ -54,3 +58,7 @@ if __name__ == "__main__":
         tiered_song_elastic.SongCreator(session).batch_all()
 
     logger.info("done")
+
+
+if __name__ == "__main__":
+    _main()

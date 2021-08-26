@@ -23,9 +23,9 @@ def connect(url):
     return Session
 
 
-def create_url_from_parts(username, password, host, dbname):
+def create_url_from_parts(username, password, host, dbname, db_type="mysql+pymysql"):
     password = urllib.parse.quote_plus(password)
-    url = "mysql+pymysql://%s:%s@%s/%s" % (username, password, host, dbname)
+    url = "%s://%s:%s@%s/%s" % (db_type, username, password, host, dbname)
     logger.info("Created mysql url for %s/%s" % (host, dbname))
     return url
 

@@ -16,10 +16,10 @@ MIN_SCORE_FOR_INQUERY = 18
 
 logger = logging.getLogger(__name__)
 
-if Config.elasticsearch_host is not None:
-    global_connect(Config.elasticsearch_host)
-else:
-    logger.error("Unable to connect to elasticsearch, no host")
+# if Config.elasticsearch_host is not None:
+#     global_connect(Config.elasticsearch_host)
+# else:
+#     logger.error("Unable to connect to elasticsearch, no host")
 
 
 def create_searchable_from_song(song):
