@@ -27,7 +27,9 @@ def _main():
     logger.setLevel(logging.INFO)
     args = argument_parser.get_args()
     if (args.copy != None):
+        import copy_songs
         logger.error(args.copy)
+        copy_songs.connect(args.copy[0], args.copy[1])
         return
     session = get_session(timeout=args.wait)()
     limit = float('inf')

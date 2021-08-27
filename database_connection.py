@@ -17,19 +17,24 @@ logger = logging.getLogger(__name__)
 # Returns what I understand to be a session maker object
 def connect(url):
     logger.error("Creating engine with url <%r>" % (url, ))
-    traceback.print_stack()
+    #    traceback.print_stack()
     engine = create_engine(url)
     Session = sessionmaker(bind=engine)
     return Session
 
 
-def create_url_from_parts(username="", password="", host="", dbname="", db_type="mysql+pymysql"):
+def create_url_from_parts(username="",
+                          password="",
+                          host="",
+                          dbname="",
+                          db_type="mysql+pymysql"):
     url = ""
-    if 'mysql' in db_type:    
+    logger.info("username: '%s', password: '%s', host: '%s', dbname: '%s'" % (username, password, host, dbname))
+    if 'mysql' in db_type:
         password = urllib.parse.quote_plus(password)
         url = "%s://%s:%s@%s/%s" % (db_type, username, password, host, dbname)
     elif 'sqlite' in db_type:
-        
+
         pass
     logger.info("Created %s url for %s/%s" % (db_type, host, dbname))
     return url

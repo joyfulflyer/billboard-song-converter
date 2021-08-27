@@ -1,8 +1,9 @@
+import logging
 import database_connection
 from config import Config as config
 
 _session_makers = {}
-
+logger = logging.getLogger(__name__)
 
 def get_session(url=None, timeout=0):
     if url is None:
