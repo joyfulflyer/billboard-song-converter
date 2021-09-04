@@ -56,6 +56,28 @@ def entries_with_no_tiered_songs_singular(session,
             yield entry
 
 
+def get_entries(session, limit=float('inf'), batch_size=STEP):
+    return _get_entries_by_step(session, limit, batch_size,
+                                db_retriever.get_entries)
+
+# copied from entries_with_no_tierd_songs_singular to be made more generic
+def _get_entries_by_step(session,
+                         limit=float('inf'),
+                         batch_size=STEP,
+                         entry_function=None):
+    if not callable(entry_function):
+        raise Exception('Function required')
+    step = _calculate_step(limit, batch_size)
+    for offset in _step_2(limit, step):
+        if offset > limit:
+            return
+        entries = entry_function(session, step, offset)
+        if len(entries) == 0:
+            return
+        for entry in entries:
+            yield entry
+
+
 def _get_entries_with_no_tiered_song_limited_offset(session, step, offset):
     return db_retriever.get_entries_with_no_tiered_song(session,
                                                         limit=step,
