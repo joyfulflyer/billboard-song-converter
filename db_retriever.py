@@ -53,6 +53,11 @@ def get_songs(Session):
     return session.query(Song).all()
 
 
+def get_charts(Session):
+    session = Session()
+    return session.query(Chart).all()
+
+
 # default to lots
 def get_songs_except_id(Session, id, limit=2000000):
     session = Session()
