@@ -19,7 +19,7 @@ logger.setLevel(logging.INFO)
 def _main():
     import argument_parser
     logging.basicConfig(
-        level=logging.ERROR,
+        level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[logging.FileHandler("log1.log"),
                   logging.StreamHandler()])
