@@ -7,7 +7,7 @@ from collections import namedtuple
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import Match
 
-from config import Config
+from database.config import Config
 from elasticsearch_client.client import global_connect
 from elasticsearch_client.song import SearchableSong
 

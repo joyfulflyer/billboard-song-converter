@@ -1,4 +1,4 @@
-import Session
+from database import Session
 import logging
 
 SQLITE = 'sqlite'

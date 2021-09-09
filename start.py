@@ -8,7 +8,7 @@ import elasticsearch_functions
 import similar_songs
 import song_creator
 import tiered_song_creator
-from Session import get_session
+from database.Session import get_session
 
 sys.path.append("/opt/")
 
