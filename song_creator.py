@@ -32,16 +32,16 @@ def _entry_to_song(entry, session):
                          (song_query, song_query.all()))
     elif song_count == 0:
         # now we check search
-        results = elastic.search_name_artist(name=entry.name,
-                                             artist=entry.artist)
-        result = results.result
-        if len(result) > 0:
-            db_song = namedtuple('Song', field_names=['id'])
-            # mark to check later
-            db_song.id = int(-1)
-        else:
-            db_song = db_saver.create_song(entry.name, entry.artist, session)
-            elastic.create_searchable_from_song(db_song)
+        # results = elastic.search_name_artist(name=entry.name,
+        #                                      artist=entry.artist)
+        # result = results.result
+        # if len(result) > 0:
+        #     db_song = namedtuple('Song', field_names=['id'])
+        #     # mark to check later
+        #     db_song.id = int(-1)
+        # else:
+        db_song = db_saver.create_song(entry.name, entry.artist, session)
+            # elastic.create_searchable_from_song(db_song)
             # songId = result[0].meta.id
             # db_song = namedtuple('Song', field_names=['id'])
             # db_song.id = int(songId)
@@ -74,5 +74,6 @@ def create_in_batch(session, total, batch_size=100):
 def batch_all(session, batch_size=1000):
     num_unprocessed = db_retriever.get_entries_with_no_song_id_with_session(
         session).count()
+    logger.info("%s songs to process" % (num_unprocessed))
     create_in_batch(session, num_unprocessed, batch_size)
     logger.info("Completed processing songs")
