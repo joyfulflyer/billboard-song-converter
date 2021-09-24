@@ -14,11 +14,7 @@ yapf = "*"
 rope = "*"
 
 [packages]
-PyMySQL = "*"
 sqlalchemy = "*"
-cryptography = "*"
-elasticsearch = "*"
-elasticsearch-dsl = "*"
 billboard-connector = "*"
 billboard-models = "*"
 

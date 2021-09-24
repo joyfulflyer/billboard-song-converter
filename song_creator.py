@@ -23,9 +23,11 @@ def _process_songs(session, limit):
 
 
 def _entry_to_song(entry, session):
+    logger.debug("Getting song id/count")
     song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
                                                     session)
     song_count = song_query.count()
+    logger.debug("Got song id from db")
     db_song = None
     if song_count > 1:
         raise ValueError("Too many songs! Query: %s\r\nSongs: %s" %
@@ -40,6 +42,7 @@ def _entry_to_song(entry, session):
         #     # mark to check later
         #     db_song.id = int(-1)
         # else:
+        logger.debug("Creating new song")
         db_song = db_saver.create_song(entry.name, entry.artist, session)
             # elastic.create_searchable_from_song(db_song)
             # songId = result[0].meta.id
@@ -49,8 +52,10 @@ def _entry_to_song(entry, session):
         db_song = song_query.first()
 
     if db_song is not None:
+        logger.debug("setting song id")
         entry.song_id = db_song.id
         session.commit()
+        logger.debug("completed entry")
 
 
 def _genny(total, batch_size):
@@ -65,6 +70,7 @@ def create_in_batch(session, total, batch_size=100):
     logger.error("Start time: %r" % (start_time, ))
     for size in _genny(total, batch_size):
         _process_songs(session, size)
+        logger.info("completed %s entries" % (batch_size))
     end_time = time.time()
     elapsed_time = end_time - start_time
     logger.error("Elapsed time: %s" %
