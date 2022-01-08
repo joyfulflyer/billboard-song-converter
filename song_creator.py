@@ -4,10 +4,13 @@ import time
 from collections import namedtuple
 
 from sqlalchemy import desc
+from sqlalchemy.sql.expression import update
 
 import db_retriever
 import db_saver
 import elastic
+from update_commandline import initialize
+from update_commandline import increment
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +23,7 @@ def _process_songs(session, limit):
     else:
         for entry in entry_query:
             _entry_to_song(entry, session)
+            increment()
 
 
 def _entry_to_song(entry, session):
@@ -68,6 +72,7 @@ def _genny(total, batch_size):
 def create_in_batch(session, total, batch_size=100):
     start_time = time.time()
     logger.error("Start time: %r" % (start_time, ))
+    initialize(total)
     for size in _genny(total, batch_size):
         _process_songs(session, size)
         logger.info("completed %s entries" % (batch_size))
