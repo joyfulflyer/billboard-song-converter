@@ -6,7 +6,11 @@ def update_commandline(current, total):
     _printProgressBar(current, total)
 
 def initialize(total, start=0):
-    _item['incrementer'] = Incrementer(total, start)
+    if total > 0:
+        _item['incrementer'] = Incrementer(total, start)
+    else:
+        import logging
+        logging.getLogger(__name__).info('No incrementor for 0 total')
 
 def increment():
     if _item['incrementer']:
@@ -27,7 +31,8 @@ class Incrementer:
     def print(self):
         if self.current == None or self.total == None:
             raise Exception('Initalize before incrementing')
-        update_commandline(self.current, self.total)
+        if self.total > 0:
+            update_commandline(self.current, self.total)
 
     def __str__(self) -> str:
         return f'current: {self.current}, total: {self.total}'
