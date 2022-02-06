@@ -8,7 +8,6 @@ from sqlalchemy.sql.expression import update
 
 import db_retriever
 import db_saver
-import elastic
 from update_commandline import initialize
 from update_commandline import increment
 
@@ -75,7 +74,6 @@ def create_in_batch(session, total, batch_size=100):
     initialize(total)
     for size in _genny(total, batch_size):
         _process_songs(session, size)
-        logger.info("completed %s entries" % (batch_size))
     end_time = time.time()
     elapsed_time = end_time - start_time
     logger.error("Elapsed time: %s" %

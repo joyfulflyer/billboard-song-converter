@@ -6,7 +6,6 @@ import sys
 
 from sqlalchemy.exc import ProgrammingError
 
-import elasticsearch_functions
 import similar_songs
 import song_creator
 import tiered_song_creator
@@ -38,7 +37,7 @@ def _main():
     if args.number >= 0:
         limit = args.number
     if args.seed:
-        asyncio.run(elasticsearch_functions.add_existing_songs_async(session))
+        raise Exception('Elastic search functions disabled')
     if args.continue_songs:
         if args.number < 0:  # -1 and -2 are create all here
             logger.info("Creating songs")
