@@ -5,8 +5,8 @@ verify_ssl = true
 
 [[source]]
 name = "rasppi"
-url = "http://192.168.1.199:8081/simple"
-verify_ssl = false
+url = "https://pypi.bmckinley.dev/simple"
+verify_ssl = true
 
 [dev-packages]
 pylint = "*"
