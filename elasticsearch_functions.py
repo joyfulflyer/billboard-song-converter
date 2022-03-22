@@ -7,7 +7,7 @@ from collections import namedtuple
 
 import db_retriever
 import elastic
-import Session
+from database import Session
 from elasticsearch_client.client import global_connect
 
 MIN_SAFE_SCORE = 25

@@ -7,7 +7,7 @@ from collections import namedtuple
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import Match
 
-from config import Config
+from database.config import Config
 from elasticsearch_client.client import global_connect
 from elasticsearch_client.song import SearchableSong
 
@@ -16,10 +16,10 @@ MIN_SCORE_FOR_INQUERY = 18
 
 logger = logging.getLogger(__name__)
 
-if Config.elasticsearch_host is not None:
-    global_connect(Config.elasticsearch_host)
-else:
-    logger.error("Unable to connect to elasticsearch, no host")
+# if Config.elasticsearch_host is not None:
+#     global_connect(Config.elasticsearch_host)
+# else:
+#     logger.error("Unable to connect to elasticsearch, no host")
 
 
 def create_searchable_from_song(song):

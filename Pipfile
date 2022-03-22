@@ -3,17 +3,20 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[[source]]
+name = "rasppi"
+url = "https://pypi.bmckinley.dev/simple"
+verify_ssl = true
+
 [dev-packages]
 pylint = "*"
 yapf = "*"
 rope = "*"
 
 [packages]
-PyMySQL = "*"
 sqlalchemy = "*"
-cryptography = "*"
-elasticsearch = "*"
-elasticsearch-dsl = "*"
+billboard-connector = "*"
+billboard-models = "*"
 
 [requires]
 python_version = "3.9"

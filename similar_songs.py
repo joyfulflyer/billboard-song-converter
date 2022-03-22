@@ -8,7 +8,6 @@ from collections import namedtuple
 
 import db_retriever
 import db_saver
-import elastic
 import entry_generators
 
 ARTIST_WORDS_TO_IGNORE = ['feat', 'featuring', 'vs', 'ft', 'the']
@@ -65,51 +64,52 @@ def _handle_group(group,
 
 
 def _handle_potential_same_song(entry, session, bypass=False, force=False):
-    # Check to see if we have an exact match
-    # If we don't, check search and ask
-    # need to update search if alternate found - if the song id is the same
-    song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
-                                                    session)
-    song_count = song_query.count()
-    db_song = None
-    if song_count == 1:
-        db_song = song_query.first()
-    else:
-        results = elastic.search_name_artist(name=entry.name,
-                                             artist=entry.artist)
-        if results.count > 0:
-            first_result = results.result[0]
-            same = further_comparison_checks(entry, first_result)
-            if same:
-                songId = first_result.meta.id
-                db_song = namedtuple('Song', field_names=['id'])
-                db_song.id = int(songId)
-            else:
-                should_create_new = ''
-                if bypass:
-                    return
+    pass
+#     # Check to see if we have an exact match
+#     # If we don't, check search and ask
+#     # need to update search if alternate found - if the song id is the same
+#     song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
+#                                                     session)
+#     song_count = song_query.count()
+#     db_song = None
+#     if song_count == 1:
+#         db_song = song_query.first()
+#     else:
+#         results = elastic.search_name_artist(name=entry.name,
+#                                              artist=entry.artist)
+#         if results.count > 0:
+#             first_result = results.result[0]
+#             same = further_comparison_checks(entry, first_result)
+#             if same:
+#                 songId = first_result.meta.id
+#                 db_song = namedtuple('Song', field_names=['id'])
+#                 db_song.id = int(songId)
+#             else:
+#                 should_create_new = ''
+#                 if bypass:
+#                     return
 
-                if force:
-                    should_create_new = ''
-                else:
-                    should_create_new = _get_input_for_song(
-                        entry, results.result)
+#                 if force:
+#                     should_create_new = ''
+#                 else:
+#                     should_create_new = _get_input_for_song(
+#                         entry, results.result)
 
-                if should_create_new.lower().strip() == 'n':
-                    songId = first_result.meta.id
-                    db_song = namedtuple('Song', field_names=['id'])
-                    db_song.id = int(songId)
-                elif should_create_new.isnumeric():
-                    db_song = namedtuple('Song', field_names=['id'])
-                    db_song.id = int(should_create_new)
-                elif should_create_new.lower().strip() == 'q':
-                    sys.exit(0)
-                else:
-                    db_song = _create_db(entry.name, entry.artist, session)
-        else:
-            db_song = _create_db(entry.name, entry.artist, session)
+#                 if should_create_new.lower().strip() == 'n':
+#                     songId = first_result.meta.id
+#                     db_song = namedtuple('Song', field_names=['id'])
+#                     db_song.id = int(songId)
+#                 elif should_create_new.isnumeric():
+#                     db_song = namedtuple('Song', field_names=['id'])
+#                     db_song.id = int(should_create_new)
+#                 elif should_create_new.lower().strip() == 'q':
+#                     sys.exit(0)
+#                 else:
+#                     db_song = _create_db(entry.name, entry.artist, session)
+#         else:
+#             db_song = _create_db(entry.name, entry.artist, session)
 
-    entry.song_id = db_song.id
+#     entry.song_id = db_song.id
 
 
 def further_comparison_checks(entry, search_result):
@@ -148,10 +148,10 @@ def further_comparison_checks(entry, search_result):
     return False
 
 
-def _create_db(name, artist, session):
-    db_song = db_saver.create_song(name, artist, session)
-    elastic.create_searchable_from_song(db_song)
-    return db_song
+# def _create_db(name, artist, session):
+#     db_song = db_saver.create_song(name, artist, session)
+#     elastic.create_searchable_from_song(db_song)
+#     return db_song
 
 
 def _strip_and_lower(song_comparison):

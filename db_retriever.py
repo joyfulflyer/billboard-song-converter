@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import desc, exc
+from sqlalchemy import desc, exc, func
 
 from instrument import instrument
 from models.chart import Chart
@@ -51,6 +51,11 @@ def get_entry(Session, id):
 def get_songs(Session):
     session = Session()
     return session.query(Song).all()
+
+
+def get_charts(Session):
+    session = Session()
+    return session.query(Chart).all()
 
 
 # default to lots
@@ -144,9 +149,10 @@ def get_tierd_song_for(session, name, artist, song_type=SONG_TYPE_BASIC):
 
 
 def get_song_id_query_for(name, artist, session):
+    # todo: this can be improved by lower casing everything before checking
     return session.query(Song.id).join(Entry).filter(
-        Entry.name == name,
-        Entry.artist == artist).filter(Entry.song_id != -1).group_by(Song.id)
+        func.lower(Entry.name) == func.lower(name),
+        func.lower(Entry.artist) == func.lower(artist)).filter(Entry.song_id != -1).group_by(Song.id)
 
 
 def finish_transaction(session):

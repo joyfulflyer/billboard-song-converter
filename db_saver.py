@@ -1,6 +1,7 @@
 import asyncio
 import functools
 import logging
+from typing import Iterable
 
 from sqlalchemy import desc, exc
 
@@ -47,3 +48,15 @@ def _commit_and_return(session, item):
     session.add(item)
     session.commit()
     return item
+
+def add_to_session(session, item):
+    if item is Iterable:
+        for i in item:
+            session.add(i)
+    else:
+        session.add(item)
+    return session
+
+def commit(session):
+    session.commit()
+    return session
