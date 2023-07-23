@@ -52,6 +52,9 @@ def get_args():
     parser.add_argument('--copy',
                         nargs=2,
                         help='Copy from one db to another (mysql, sqlite)')
+    parser.add_argument('--check',
+                        action='store_true',
+                        help='Print out any potential duplicates')
 
     args = parser.parse_args()
     return args

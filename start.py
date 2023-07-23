@@ -9,6 +9,7 @@ from sqlalchemy.exc import ProgrammingError
 import similar_songs
 import song_creator
 import tiered_song_creator
+import TooManySongsError
 from database.Session import get_session
 
 sys.path.append("/opt/")
@@ -59,6 +60,16 @@ def _main():
     if args.elastic_tier:
         import tiered_song_elastic
         tiered_song_elastic.SongCreator(session).batch_all()
+
+    if args.check:
+        try:
+            song_creator.batch_all(session)
+        except TooManySongsError.TooManySongsError as e:
+            # print out entries with the problematic ids
+            import chart_checker
+            chart_checker.entries_from_song_ids(session, e.data)
+
+        pass
 
     logger.info("done")
 

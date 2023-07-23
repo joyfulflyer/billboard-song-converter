@@ -8,6 +8,7 @@ from sqlalchemy.sql.expression import update
 
 import db_retriever
 import db_saver
+import TooManySongsError
 from update_commandline import initialize
 from update_commandline import increment
 
@@ -33,8 +34,9 @@ def _entry_to_song(entry, session):
     logger.debug("Got song id from db")
     db_song = None
     if song_count > 1:
-        raise ValueError("Too many songs! Query: %s\r\nSongs: %s" %
-                         (song_query, song_query.all()))
+        query_data = song_query.all()
+        raise TooManySongsError.TooManySongsError("Too many songs! Query: %s\r\nSongs: %s" %
+                         (song_query, query_data), query_data)
     elif song_count == 0:
         # now we check search
         # results = elastic.search_name_artist(name=entry.name,
