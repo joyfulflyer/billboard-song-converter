@@ -8,6 +8,7 @@ from sqlalchemy.sql.expression import update
 
 import db_retriever
 import db_saver
+from TooManySongsError import TooManySongsError
 from update_commandline import initialize
 from update_commandline import increment
 
@@ -27,14 +28,25 @@ def _process_songs(session, limit):
 
 def _entry_to_song(entry, session):
     logger.debug("Getting song id/count")
-    song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
+    song_query = db_retriever.get_song_id_query_for(
+                                                    entry.name, 
+                                                    entry.artist, 
                                                     session)
     song_count = song_query.count()
     logger.debug("Got song id from db")
     db_song = None
     if song_count > 1:
-        raise ValueError("Too many songs! Query: %s\r\nSongs: %s" %
-                         (song_query, song_query.all()))
+        song_query = db_retriever.get_song_id_query_for_case_sensitive(
+                                                                       entry.name, 
+                                                                       entry.artist,
+                                                                       session)
+        song_count = song_query.count()
+        if song_count != 1:
+            query_data = song_query.all()
+            raise TooManySongsError("Error finding song! Query: %s\r\nSongs: %s" %
+                         (song_query, query_data), query_data)
+        else: 
+            db_song = song_query.first()
     elif song_count == 0:
         # now we check search
         # results = elastic.search_name_artist(name=entry.name,
@@ -59,6 +71,8 @@ def _entry_to_song(entry, session):
         entry.song_id = db_song.id
         session.commit()
         logger.debug("completed entry")
+    else:
+        raise RuntimeError("db_song is None")
 
 
 def _genny(total, batch_size):
