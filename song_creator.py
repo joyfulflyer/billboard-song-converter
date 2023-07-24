@@ -28,14 +28,18 @@ def _process_songs(session, limit):
 
 def _entry_to_song(entry, session):
     logger.debug("Getting song id/count")
-    song_query = db_retriever.get_song_id_query_for(entry.name, entry.artist,
+    song_query = db_retriever.get_song_id_query_for(
+                                                    entry.name, 
+                                                    entry.artist, 
                                                     session)
     song_count = song_query.count()
     logger.debug("Got song id from db")
     db_song = None
     if song_count > 1:
-        song_query = db_retriever.get_song_id_query_for_case_sensitive(entry.name, entry.artist,
-                                                        session)
+        song_query = db_retriever.get_song_id_query_for_case_sensitive(
+                                                                       entry.name, 
+                                                                       entry.artist,
+                                                                       session)
         song_count = song_query.count()
         if song_count != 1:
             query_data = song_query.all()
