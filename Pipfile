@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [[source]]
-name = "rasppi"
+name = "bmckinley"
 url = "https://pypi.bmckinley.dev/simple"
 verify_ssl = true
 
@@ -15,8 +15,8 @@ rope = "*"
 
 [packages]
 sqlalchemy = "*"
-billboard-connector = "*"
-billboard-models = "*"
+billboard-models = {version="*", index="bmckinley"}
+billboard-connector = {version="*", index="bmckinley"}
 
 [requires]
 python_version = "3.9"
