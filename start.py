@@ -62,13 +62,16 @@ def _main():
         tiered_song_elastic.SongCreator(session).batch_all()
 
     if args.check:
+        # New idea: we go through and for each song see if there is a song that's the same but only cased differently?
+        
         try:
             song_creator.batch_all(session)
         except TooManySongsError.TooManySongsError as e:
             # print out entries with the problematic ids
             import chart_checker
-            chart_checker.entries_from_song_ids(session, e.data)
-
+            # what's the actual goal here? print out the data?
+            entries_from_song_1, entries_from_song_2 = chart_checker.entries_from_song_ids(session, e.data)
+            print("Entries from song 1: %s/n/n entries from song 2: %s" % (entries_from_song_1, entries_from_song_2))
         pass
 
     logger.info("done")
