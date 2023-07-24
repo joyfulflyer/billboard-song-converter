@@ -154,6 +154,12 @@ def get_song_id_query_for(name, artist, session):
         func.lower(Entry.name) == func.lower(name),
         func.lower(Entry.artist) == func.lower(artist)).filter(Entry.song_id != -1).group_by(Song.id)
 
+def get_song_id_query_for_case_sensitive(name, artist, session):
+    # todo: this can be improved by lower casing everything before checking
+    return session.query(Song.id).join(Entry).filter(
+        Entry.name == name,
+        Entry.artist == artist).filter(Entry.song_id != -1).group_by(Song.id)
+
 
 def finish_transaction(session):
     session.commit()
