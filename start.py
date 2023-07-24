@@ -9,7 +9,6 @@ from sqlalchemy.exc import ProgrammingError
 import similar_songs
 import song_creator
 import tiered_song_creator
-import TooManySongsError
 from database.Session import get_session
 
 sys.path.append("/opt/")
